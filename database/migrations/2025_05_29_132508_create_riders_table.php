@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('riders', function (Blueprint $table) {
+            $table->id();
+            $table->string('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->longText('license_number');
+            $table->date('license_expiry');
+            $table->longText('license_photo');
+            $table->bigInteger('total_rides');
+            $table->bigInteger('driving_experience');
+            $table->integer('current_rating');
+            $table->enum('status', ['online', 'offline'])->default('offline');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('riders');
+    }
+};
