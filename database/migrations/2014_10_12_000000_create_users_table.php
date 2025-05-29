@@ -26,7 +26,7 @@ return new class extends Migration
             $table->longText('avatar');
             $table->longText('ip');
             $table->longText('device_id');
-            $table->enum('role', ['passenger', 'rider'])->default('passenger');
+            $table->enum('role', ['customer', 'rider'])->default('customer');
             $table->enum('status', ['active', 'inactive','suspended','pending'])->default('active');
             $table->rememberToken();
             $table->timestamps();
