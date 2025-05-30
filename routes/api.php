@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\VehicleTypeRateController;
+use App\Models\VehicleTypeRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
@@ -50,7 +52,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::middleware('admin')->group(function () {
 
-            Route::apiResource('riders',AdminRiderController::class)->only(methods: 'index');
+            Route::apiResource('riders',AdminRiderController::class)->only('index');
+            Route::apiResource('vehicle-type-rates',VehicleTypeRateController::class)->only('index','store','update','destroy');
 
 
             Route::get('/', function () {

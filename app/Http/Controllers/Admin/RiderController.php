@@ -20,11 +20,9 @@ class RiderController extends Controller
     {
         try{
             $admin = Auth::user();
-            // return response()->json($admin);
-            // check token ability
-            // if (!$admin->can('admin')) {
-            //     return response()->json(['error' => 'Unauthorized'], 401);
-            // }
+            if (!$admin->tokenCan('admin')) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
             
             $query = User::select('users.*')
             ->join('riders', 'users.id', '=', 'riders.user_id')->orderBy('id', 'desc');
@@ -53,13 +51,6 @@ class RiderController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -74,7 +65,7 @@ class RiderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
