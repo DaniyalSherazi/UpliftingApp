@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rider;
 
 use App\Http\Controllers\Controller;
 use App\Models\Rider;
+use DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
@@ -18,7 +19,8 @@ class AuthController extends Controller
     public function signup(Request $request): JsonResponse
     {
         try{
-            Validator::make($request->all(),[
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(),[
                 'first_name' => 'required',
                 'last_name' => 'required',
                 'username' => 'required|unique:users,username',
@@ -49,6 +51,8 @@ class AuthController extends Controller
                 'lat_long.required' => 'Lat long is required',
             ]);
 
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
             $avatar = null;
             $nat_id_photo = null;
             // move photos to storage
@@ -67,7 +71,7 @@ class AuthController extends Controller
             }
 
 
-            User::create([
+            $rider = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'username' => $request->username,
@@ -85,10 +89,16 @@ class AuthController extends Controller
 
             ]);
 
+            Rider::create([
+                'user_id' => $rider->id
+            ]);
+            DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
         }catch(QueryException $e){
+            DB::rollBack();
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     } 
@@ -96,7 +106,7 @@ class AuthController extends Controller
     public function signin(Request $request): JsonResponse
     {
         try{
-            Validator::make($request->all(),[
+            $validator = Validator::make($request->all(),[
                 'email' => 'required|email',
                 'password' => 'required',
             ],[
@@ -105,7 +115,11 @@ class AuthController extends Controller
                 'password.required' => 'Password is required',
             ]);      
 
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
             $user = User::where('email', $request->email)->first();
+
+            if (!$user) throw new Exception('User not found', 404);
 
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials'], 401);

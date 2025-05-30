@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->longText('license_number');
-            $table->date('license_expiry');
-            $table->longText('license_photo');
-            $table->bigInteger('total_rides');
-            $table->bigInteger('driving_experience');
-            $table->integer('current_rating');
+            $table->longText('license_number')->nullable();
+            $table->date('license_expiry')->nullable();
+            $table->longText('license_photo')->nullable();
+            $table->bigInteger('total_rides')->default(0);
+            $table->bigInteger('driving_experience')->nullable();
+            $table->integer('current_rating')->default(0);
             $table->enum('status', ['online', 'offline'])->default('offline');
             $table->timestamps();
         });

@@ -28,7 +28,7 @@ class User extends Authenticatable
         'nat_id',
         'nat_id_photo',
         'avatar',
-        'ip',
+        'lat_long',
         'device_id',
         'status',
         'role',

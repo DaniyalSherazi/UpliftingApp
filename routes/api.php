@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
+use App\Http\Controllers\Admin\RiderController as AdminRiderController;
 use App\Http\Controllers\Rider\AuthController as RiderAuth;
 
 /*
@@ -17,7 +18,7 @@ use App\Http\Controllers\Rider\AuthController as RiderAuth;
 */
 
 Route::prefix('admin')->group(function () {
-    Route::post('login', [AdminAuth::class, 'login']);
+    Route::post('signin', [AdminAuth::class, 'signin']);
 
     Route::middleware('admin')->group(function () {
         Route::get('/', function () {
@@ -26,21 +27,44 @@ Route::prefix('admin')->group(function () {
     });
 });
 
+// for rider
+Route::prefix('rider')->group(function () {
+    Route::post('/signin', [RiderAuth::class, 'signin']);
+    Route::post('/signup', [RiderAuth::class, 'signup']);
+
+});
+
+
+// for customer
+Route::prefix('customer')->group(function () {
+    Route::post('/signin', [RiderAuth::class, 'signin']);
+    Route::post('/signup', [RiderAuth::class, 'singup']);
+
+});
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
+    Route::prefix('admin')->group(function () {
+
+        Route::middleware('admin')->group(function () {
+
+            Route::apiResource('riders',AdminRiderController::class)->only(methods: 'index');
+
+
+            Route::get('/', function () {
+                return response()->json(['message' => 'Admin Dashboard']);
+            });
+        });
+    });
+
     // for rider
     Route::prefix('rider')->group(function () {
-        Route::post('/signin', [RiderAuth::class, 'signin']);
-        Route::post('/signup', [RiderAuth::class, 'singup']);
 
     });
 
 
     // for customer
     Route::prefix('customer')->group(function () {
-        Route::post('/signin', [RiderAuth::class, 'signin']);
-        Route::post('/signup', [RiderAuth::class, 'singup']);
-
     });
+    
 });

@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function login(Request $request): JsonResponse
+    public function signin(Request $request): JsonResponse
     {
         try{
-            Validator::make($request->all(),[
+            $validator = Validator::make($request->all(),[
                 'email' => 'required|email',
                 'password' => 'required',
             ],[
@@ -25,20 +25,22 @@ class AuthController extends Controller
                 'password.required' => 'Password is required',
             ]);
 
-        $admin = Admin::where('email', $request->email)->first();
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
 
-        if (!$admin || !Hash::check($request->password, $admin->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
+            $admin = Admin::where('email', $request->email)->first();
 
-        $token = $admin->createToken('admin-token', ['admin'])->plainTextToken;
+            if (!$admin || !Hash::check($request->password, $admin->password)) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+            $admin->tokens()->delete();
+            $token = $admin->createToken('admin-token', ['admin'])->plainTextToken;
 
-        return response()->json(['token' => $token], 200);
+            return response()->json(['token' => $token], 200);
 
         }catch(QueryException $e){
-            return response()->json(['DB error' => $e->getMessage()], 500);
+            return response()->json(['DB error' => $e->getMessage()], 403);
         }catch(Exception $e){
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('current_rating');
-            $table->bigInteger('total_rides');
+            $table->integer('current_rating')->default(0);
+            $table->bigInteger('total_rides')->default(0);
             $table->enum('status', ['online', 'offline'])->default('offline');
             $table->timestamps();
         });

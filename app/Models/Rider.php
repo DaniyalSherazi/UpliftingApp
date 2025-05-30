@@ -9,7 +9,7 @@ class Rider extends Model
 {
     use HasFactory;
 
-    protected $fillables = [
+    protected $fillable = [
         'user_id',
         'total_rides',
         'current_rating',
