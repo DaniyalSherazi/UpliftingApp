@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
 use App\Http\Controllers\Admin\RiderController as AdminRiderController;
 use App\Http\Controllers\Rider\AuthController as RiderAuth;
+use App\Http\Controllers\Customer\AuthController as CustomerAuth;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,8 @@ Route::prefix('rider')->group(function () {
 
 // for customer
 Route::prefix('customer')->group(function () {
-    Route::post('/signin', [RiderAuth::class, 'signin']);
-    Route::post('/signup', [RiderAuth::class, 'singup']);
+    Route::post('/signin', [CustomerAuth::class, 'signin']);
+    Route::post('/signup', [CustomerAuth::class, 'signup']);
 
 });
 

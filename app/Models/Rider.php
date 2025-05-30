@@ -11,6 +11,9 @@ class Rider extends Model
 
     protected $fillable = [
         'user_id',
+        'license_number',
+        'license_expiry',
+        'driving_experience',
         'total_rides',
         'current_rating',
         'status'

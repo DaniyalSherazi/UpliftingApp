@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Rider;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Mail\OTPMail;
-use App\Models\PasswordResetToken;
-use App\Models\Rider;
+use App\Models\Customer;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -14,8 +12,8 @@ use Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Models\PasswordResetToken;
 
 class AuthController extends Controller
 {
@@ -61,20 +59,20 @@ class AuthController extends Controller
             // move photos to storage
             if ($request->hasFile('avatar')) {
                 $image = $request->file('avatar');
-                $image_name = 'r-avatar' . time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('rider-avatar'), $image_name);
-                $avatar = 'rider-avatar/' . $image_name;
+                $image_name = 'c-avatar' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('customer-avatar'), $image_name);
+                $avatar = 'customer-avatar/' . $image_name;
             }
 
             if ($request->hasFile('nat_id_photo')) {
                 $image = $request->file('nat_id_photo');
-                $image_name = 'r-nat-id' . time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('rider-nat-id'), $image_name);
-                $nat_id_photo = 'rider-nat-id/' . $image_name;
+                $image_name = 'c-nat-id' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('customer-nat-id'), $image_name);
+                $nat_id_photo = 'customer-nat-id/' . $image_name;
             }
 
 
-            $rider = User::create([
+            $customer = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'username' => $request->username,
@@ -83,7 +81,7 @@ class AuthController extends Controller
                 'nat_id' => $request->nat_id,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role' => 'rider',
+                'role' => 'customer',
                 'status' => 'pending',
                 'lat_long' => $request->lat_long,
                 'device_id' => $request->device_id,
@@ -92,8 +90,8 @@ class AuthController extends Controller
 
             ]);
 
-            Rider::create([
-                'user_id' => $rider->id
+            Customer::create([
+                'user_id' => $customer->id
             ]);
             DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
@@ -167,13 +165,9 @@ class AuthController extends Controller
                 $license_photo = 'rider-license/' . $image_name;
             }
 
-            Rider::create([
+            Customer::create([
                 'user_id' => $user->id,
-                'license_number' => $request->license_number,
-                'license_expiry' => $request->license_expiry,
-                'license_photo' => $license_photo,
                 'total_rides' => 0,
-                'driving_experience' => $request->driving_experience,
                 'current_rating' => 0
             ]);
 
@@ -216,11 +210,11 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            Mail::to($request->email)->send(new OTPMail([
-                'message' => 'Hi '.$user->name.', This is your one time password',
-                'otp' => $token,
-                'is_url'=>false
-            ]));
+            // Mail::to($request->email)->send(new UserMail([
+            //     'message' => 'Hi '.$user->name.', This is your one time password',
+            //     'otp' => $token,
+            //     'is_url'=>false
+            // ]));
             return response()->json([
                 'message' => 'Reset OTP sent successfully',
             ], 200);
