@@ -126,7 +126,8 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid credentials'], 401);
             }
 
-            $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
+            $user->tokens()->delete();
+            $token = $user->createToken('customer-token', ['customer'])->plainTextToken;
 
             return response()->json(['token' => $token], 200);
 
@@ -140,9 +141,9 @@ class AuthController extends Controller
     public function setup(Request $request): JsonResponse
     {
         try{
-            $user = Auth::user();
+            $customer = Auth::user();
 
-            Validator::make($request->all(),[
+            $validator = Validator::make($request->all(),[
                 'license_number' => 'required',
                 'license_expiry' => 'required',
                 'license_photo' => 'required',
@@ -154,7 +155,9 @@ class AuthController extends Controller
                 'driving_experience.required' => 'Driving experience is required',
             ]);
 
-            if (!$user) throw new Exception('Account not found');
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            if (!$customer) throw new Exception('Account not found');
 
             $license_photo = null;
 
@@ -165,8 +168,8 @@ class AuthController extends Controller
                 $license_photo = 'rider-license/' . $image_name;
             }
 
-            Customer::create([
-                'user_id' => $user->id,
+            $customer->update([
+                'user_id' => $customer->id,
                 'total_rides' => 0,
                 'current_rating' => 0
             ]);
@@ -267,6 +270,18 @@ class AuthController extends Controller
             return response()->json(['DB error' => $e->getMessage()], 400);
         }catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()],400);
+        }
+    }
+
+    public function logout(): JsonResponse
+    {
+        try{
+            Auth::user()->tokens()->delete();
+            return response()->json(['message' => 'Logout successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

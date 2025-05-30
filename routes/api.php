@@ -32,6 +32,7 @@ Route::prefix('admin')->group(function () {
 Route::prefix('rider')->group(function () {
     Route::post('/signin', [RiderAuth::class, 'signin']);
     Route::post('/signup', [RiderAuth::class, 'signup']);
+    
 
 });
 
@@ -56,16 +57,26 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 return response()->json(['message' => 'Admin Dashboard']);
             });
         });
+
+        Route::get('/logout', [AdminAuth::class, 'logout']);
     });
 
     // for rider
     Route::prefix('rider')->group(function () {
-
+        Route::post('/setup', [RiderAuth::class, 'setup']);
+        Route::get('/profile', [RiderAuth::class, 'profile']);
+        Route::post('/edit-profile', [RiderAuth::class, 'editProfile']);
+        Route::post('/change-password', [RiderAuth::class, 'changePassword']);
+        Route::get('/logout', [RiderAuth::class, 'logout']);
     });
 
 
     // for customer
     Route::prefix('customer')->group(function () {
+        Route::get('/profile', [CustomerAuth::class, 'profile']);
+        Route::post('/edit-profile', [CustomerAuth::class, 'editProfile']);
+        Route::post('/change-password', [CustomerAuth::class, 'changePassword']);
+        Route::get('/logout', [CustomerAuth::class, 'logout']);
     });
     
 });

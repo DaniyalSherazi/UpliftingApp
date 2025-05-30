@@ -14,6 +14,7 @@ class Rider extends Model
         'license_number',
         'license_expiry',
         'driving_experience',
+        'license_photo',
         'total_rides',
         'current_rating',
         'status'

@@ -9,6 +9,7 @@ use Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -44,4 +45,15 @@ class AuthController extends Controller
         }
     }
 
+    public function logout(): JsonResponse
+    {
+        try{
+            Auth::user()->tokens()->delete();
+            return response()->json(['message' => 'Logout successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

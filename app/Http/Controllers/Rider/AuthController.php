@@ -127,7 +127,7 @@ class AuthController extends Controller
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials'], 401);
             }
-
+            $user->tokens()->delete();
             $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
 
             return response()->json(['token' => $token], 200);
@@ -142,9 +142,11 @@ class AuthController extends Controller
     public function setup(Request $request): JsonResponse
     {
         try{
-            $user = Auth::user();
+            $rider = Auth::user();
 
-            Validator::make($request->all(),[
+            DB::beginTransaction();
+
+            $validator = Validator::make($request->all(),[
                 'license_number' => 'required',
                 'license_expiry' => 'required',
                 'license_photo' => 'required',
@@ -156,7 +158,9 @@ class AuthController extends Controller
                 'driving_experience.required' => 'Driving experience is required',
             ]);
 
-            if (!$user) throw new Exception('Account not found');
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            if (!$rider) throw new Exception('Account not found');
 
             $license_photo = null;
 
@@ -167,8 +171,8 @@ class AuthController extends Controller
                 $license_photo = 'rider-license/' . $image_name;
             }
 
-            Rider::create([
-                'user_id' => $user->id,
+            $rider->update([
+                'user_id' => $rider->id,
                 'license_number' => $request->license_number,
                 'license_expiry' => $request->license_expiry,
                 'license_photo' => $license_photo,
@@ -177,11 +181,14 @@ class AuthController extends Controller
                 'current_rating' => 0
             ]);
 
+            DB::commit();
             return response()->json(['message' => 'Your account is setup successfully'], 200);
 
         }catch(QueryException $e){
+            DB::rollBack();
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -273,6 +280,101 @@ class AuthController extends Controller
             return response()->json(['DB error' => $e->getMessage()], 400);
         }catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()],400);
+        }
+    }
+
+    public function profile(): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            return response()->json(['user' => $user], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function editProfile(Request $request): JsonResponse
+    {
+        try{
+            $rider = Auth::user();
+            DB::beginTransaction();
+            $validator = Validator::make(request()->all(),[
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                'avatar' => 'nullable',
+            ],[
+                'first_name.required' => 'First name is required',
+                'last_name.required' => 'Last name is required',
+                'phone.required' => 'Phone number is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            $rider->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone' => $request->phone,
+                'avatar' => $request->avatar,
+            ]);
+            DB::commit();
+            return response()->json(['user' => $rider], 200);
+        }catch(QueryException $e){
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(),[
+                'current_password' => 'required',
+                'new_password' => 'required',
+                'confirm_password' => 'required|same:new_password',
+            ],[
+                'current_password.required' => 'Current password is required',
+                'new_password.required' => 'New password is required',
+                'confirm_password.required' => 'Confirm password is required',
+                'confirm_password.same' => 'Confirm password must be same as new password',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            
+            if (!$user || !Hash::check($request->current_password, $user->password)) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+            $user->update([
+                'password' => Hash::make($request->new_password),
+            ]);
+            DB::commit();
+            return response()->json(['message' => 'Password changed successfully'], 200);
+        }catch(QueryException $e){
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function logout(): JsonResponse
+    {
+        try{
+            Auth::user()->tokens()->delete();
+            return response()->json(['message' => 'Logout successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
