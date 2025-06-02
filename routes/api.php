@@ -26,6 +26,8 @@ use App\Http\Controllers\Customer\AuthController as CustomerAuth;
 Route::prefix('rider')->group(function () {
     Route::post('/signin', [RiderAuth::class, 'signin']);
     Route::post('/signup', [RiderAuth::class, 'signup']);
+    Route::post('/forgot-password', [RiderAuth::class, 'forgotPassword']);
+    Route::post('/reset-password', [RiderAuth::class, 'resetPassword']);
     
 
 });
@@ -35,7 +37,8 @@ Route::prefix('rider')->group(function () {
 Route::prefix('customer')->group(function () {
     Route::post('/signin', [CustomerAuth::class, 'signin']);
     Route::post('/signup', [CustomerAuth::class, 'signup']);
-
+    Route::post('/forgot-password', [CustomerAuth::class, 'forgotPassword']);
+    Route::post('/reset-password', [CustomerAuth::class, 'resetPassword']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
