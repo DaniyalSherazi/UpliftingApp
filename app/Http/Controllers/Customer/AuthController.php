@@ -82,7 +82,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => 'customer',
-                'status' => 'pending',
+                'status' => 'active',
                 'lat_long' => $request->lat_long,
                 'device_id' => $request->device_id,
                 'nat_id_photo' => $nat_id_photo,
@@ -130,51 +130,6 @@ class AuthController extends Controller
             $token = $user->createToken('customer-token', ['customer'])->plainTextToken;
 
             return response()->json(['token' => $token], 200);
-
-        }catch(QueryException $e){
-            return response()->json(['DB error' => $e->getMessage()], 500);
-        }catch(Exception $e){
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function setup(Request $request): JsonResponse
-    {
-        try{
-            $customer = Auth::user();
-
-            $validator = Validator::make($request->all(),[
-                'license_number' => 'required',
-                'license_expiry' => 'required',
-                'license_photo' => 'required',
-                'driving_experience' => 'required',
-            ],[
-                'license_number.required' => 'License number is required',
-                'license_expiry.required' => 'License expiry is required',
-                'license_photo.required' => 'License photo is required',
-                'driving_experience.required' => 'Driving experience is required',
-            ]);
-
-            if($validator->fails())throw new Exception($validator->errors()->first(),400);
-
-            if (!$customer) throw new Exception('Account not found');
-
-            $license_photo = null;
-
-            if ($request->hasFile('license_photo')) {
-                $image = $request->file('license_photo');
-                $image_name = 'r-license' . $request->license_number . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('rider-license'), $image_name);
-                $license_photo = 'rider-license/' . $image_name;
-            }
-
-            $customer->update([
-                'user_id' => $customer->id,
-                'total_rides' => 0,
-                'current_rating' => 0
-            ]);
-
-            return response()->json(['message' => 'Your account is setup successfully'], 200);
 
         }catch(QueryException $e){
             return response()->json(['DB error' => $e->getMessage()], 500);

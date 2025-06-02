@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\VehicleTypeRateController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
+use App\Http\Controllers\Admin\RiderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,9 +24,13 @@ Route::prefix('admin')->group(function () {
     Route::post('signin', [AdminAuth::class, 'signin'])->name('admin.signin');
 
     Route::middleware('admin')->group(function () {
-        Route::get('/logout', [AdminAuth::class, 'logout']);
+        Route::get('/logout', [AdminAuth::class, 'logout'])->name('admin.logout');
 
-            Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+        Route::resource('/riders', RiderController::class);
+        Route::resource('/customers', CustomerController::class);
+        Route::resource('/vehicle-type-rates', VehicleTypeRateController::class);
     });
 
 

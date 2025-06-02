@@ -60,8 +60,6 @@ class AuthController extends Controller
 
             Auth::guard('admin')->login($admin);
             $request->session()->regenerate();
-            // dd($admin);
-            // logActivity('admin logged in');
             Session::flash('success', [
                 'text' => 'Welcome! ' . $admin->name,
             ]);

@@ -50,6 +50,10 @@ class VehicleTypeRateController extends Controller
         }
     }
 
+    public function create(){
+        return view('admin.vehicleTypeRates.create');
+    }
+
     /**
      * Store a newly created resource in storage.
      */

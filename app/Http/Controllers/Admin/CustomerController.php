@@ -3,19 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $active_riders = User::where('role', 'rider')->where('status','active')->count();
-        $active_customers = User::where('role', 'customer')->where('status','active')->count();
-        return view('admin.dashboard',compact('active_riders','active_customers'));
+        //
     }
 
     /**

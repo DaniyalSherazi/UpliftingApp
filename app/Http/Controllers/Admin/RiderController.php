@@ -10,19 +10,16 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class RiderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         try{
-            $admin = Auth::user();
-            if (!$admin->tokenCan('admin')) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
             
             $query = User::select('users.*')
             ->join('riders', 'users.id', '=', 'riders.user_id')->orderBy('id', 'desc');
@@ -42,12 +39,13 @@ class RiderController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return response()->json($data,200);
+            return view('Admin.Riders.index', compact('data'));
 
-        }catch(QueryException $e){
-            return response()->json(['DB error' => $e->getMessage()], 401);
         }catch(Exception $e){
-            return response()->json(['error' => $e->getMessage()], 400);
+            Session::flash('error', [
+                'text' => "something went wrong. Please try again",
+            ]);
+            return redirect()->back();
         }
     }
 

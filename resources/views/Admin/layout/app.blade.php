@@ -9,7 +9,7 @@
 
 <link rel="icon" href="favicon.ico" type="image/x-icon"/>
 
-<title>@yield('title') {{ config('app.name') }}</title>
+<title>@yield('title') - {{ config('app.name') }}</title>
 
 <!-- Bootstrap Core and vandor -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -51,6 +51,7 @@
             <div class="hright">
                 <div class="dropdown">
                     <a href="javascript:void(0)" class="nav-link icon settingbar"><i class="fa fa-gear fa-spin" data-toggle="tooltip" data-placement="right" title="Settings"></i></a>
+                    <a href="{{ route('admin.logout') }}" class="nav-link icon logoutbar"><i class="fa-solid fa-arrow-right-from-bracket" data-toggle="tooltip" data-placement="right" title="Logout"></i></a>
                     <a href="javascript:void(0)" class="nav-link icon menu_toggle"><i class="fa  fa-align-left"></i></a>
                 </div>            
             </div>
@@ -301,10 +302,10 @@
         <nav id="left-sidebar-nav" class="sidebar-nav">
             <ul class="metismenu">
                 <li class="g_heading">Project</li>
-                <li class="active"><a href="index-2.html"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>                        
-                <li><a href="project-list.html"><i class="fa fa-list-ol"></i><span>Project list</span></a></li>
-                <li><a href="project-taskboard.html"><i class="fa fa-calendar-check-o"></i><span>Taskboard</span></a></li>
-                <li><a href="project-ticket.html"><i class="fa fa-list-ul"></i><span>Ticket List</span></a></li>
+                <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>                        
+                <li class="{{ request()->is('admin/riders') ? 'active' : '' }}"><a href="{{ url('admin/riders') }}"><i class="fa fa-list-ol"></i><span>Riders</span></a></li>
+                <li class="{{ request()->is('admin/customers') ? 'active' : '' }}"><a href="{{ url('admin/customers') }}"><i class="fa fa-calendar-check-o"></i><span>Customers</span></a></li>
+                <li class="{{ request()->is('admin/vehicle-type-rates') ? 'active' : '' }}"><a href="{{ url('admin/vehicle-type-rates') }}"><i class="fa fa-list-ul"></i><span>Vehicle Type Rate</span></a></li>
                 <li><a href="project-ticket-details.html"><i class="icon-tag"></i><span>Ticket Details</span></a></li>
                 <li><a href="project-clients.html"><i class="fa fa-user"></i><span>Clients</span></a></li>
                 <li><a href="project-todo.html"><i class="fa fa-check-square-o"></i><span>Todo List</span></a></li>
@@ -337,6 +338,7 @@
         {{-- Header --}}
             @include('admin.layout.header')
             {{-- .Header --}}
+            
 
             {{-- Content --}}
             @yield('content')

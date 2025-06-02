@@ -1,5 +1,5 @@
 @extends('admin.layout.app')
-@section('title', 'Dashboard - ')
+@section('title', 'Dashboard')
 
 @push('style')
     
@@ -11,7 +11,7 @@
                 <div class="row clearfix">
                     <div class="col-lg-12">
                         <div class="mb-4">
-                            <h4>Welcome Peter Richards!</h4>
+                            <h4>Welcome Admin!</h4>
                             <small>Measure How Fast You’re Growing Monthly Recurring Revenue. <a href="#">Learn More</a></small>
                         </div>                        
                     </div>
@@ -20,10 +20,10 @@
                     <div class="col-xl-2 col-lg-4 col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Active Cases</h3>
+                                <h3 class="card-title">Active Riders</h3>
                             </div>
                             <div class="card-body">
-                                <h5 class="number mb-0 font-32 counter">31</h5>
+                                <h5 class="number mb-0 font-32 counter">{{ $active_riders }}</h5>
                                 <span class="font-12">Measure How Fast... <a href="#">More</a></span>
                             </div>
                         </div>
@@ -31,10 +31,10 @@
                     <div class="col-xl-2 col-lg-4 col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Pending Tasks</h3>
+                                <h3 class="card-title">Active Customers</h3>
                             </div>
                             <div class="card-body">
-                                <h5 class="number mb-0 font-32 counter">245</h5>
+                                <h5 class="number mb-0 font-32 counter">{{ $active_customers }}</h5>
                                 <span class="font-12">Measure How Fast... <a href="#">More</a></span>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                     <div class="col-xl-2 col-lg-4 col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Upcoming Events</h3>
+                                <h3 class="card-title">Total Rides</h3>
                             </div>
                             <div class="card-body">
                                 <h5 class="number mb-0 font-32 counter">17</h5>
@@ -53,7 +53,7 @@
                     <div class="col-xl-2 col-lg-4 col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">New Message</h3>
+                                <h3 class="card-title">Active Rides</h3>
                             </div>
                             <div class="card-body">
                                 <h5 class="number mb-0 font-32 counter">12</h5>

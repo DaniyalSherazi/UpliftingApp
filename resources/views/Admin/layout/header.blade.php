@@ -1,10 +1,10 @@
-@section('header')
+
     <div id="page_top" class="section-body top_dark">
         <div class="container-fluid">
             <div class="page-header">
                 <div class="left">
                     <a href="javascript:void(0)" class="icon menu_toggle mr-3"><i class="fa  fa-align-left"></i></a>
-                    <h1 class="page-title">Dashboard</h1>
+                    <h1 class="page-title">@yield('title')</h1>
                 </div>
                 <div class="right">
                     <div class="input-icon xs-hide mr-4">
@@ -163,5 +163,3 @@
             </div>
         </div>
     </div>
-    <!-- End Main Header -->
-@endsection
