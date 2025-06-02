@@ -20,15 +20,7 @@ use App\Http\Controllers\Customer\AuthController as CustomerAuth;
 |
 */
 
-Route::prefix('admin')->group(function () {
-    Route::post('signin', [AdminAuth::class, 'signin']);
 
-    Route::middleware('admin')->group(function () {
-        Route::get('/', function () {
-            return response()->json(['message' => 'Admin Dashboard']);
-        });
-    });
-});
 
 // for rider
 Route::prefix('rider')->group(function () {

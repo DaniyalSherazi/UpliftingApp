@@ -16,7 +16,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth('admin')->check()) {
-           return response()->json(['error' => 'Unauthorized'], 401);
+           return redirect()->route('admin.login');
         }
 
         return $next($request);
