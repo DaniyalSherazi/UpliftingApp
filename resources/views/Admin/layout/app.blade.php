@@ -17,10 +17,12 @@
 
 <!-- Plugins css -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/charts-c3/c3.min.css') }}"/>
+<link rel="stylesheet" href="{{ asset('assets/plugins/dropify/css/dropify.min.css')}}">
 
 <!-- Core css -->
 <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}"/>
 <link rel="stylesheet" href="{{ asset('assets/css/theme1.css') }}"/>
+<link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}"/>
 
 @stack('style')
 </head>
@@ -39,7 +41,7 @@
             <div class="hleft">
                 <a class="header-brand" href="index-2.html"><i class="fa fa-soccer-ball-o brand-logo"></i></a>
                 <div class="dropdown">
-                    <a href="javascript:void(0)" class="nav-link user_btn"><img class="avatar" src="assets/images/user.png" alt="" data-toggle="tooltip" data-placement="right" title="User Menu"/></a>
+                    <a href="javascript:void(0)" class="nav-link user_btn"><img class="avatar" src="{{ asset('assets/images/user.png') }}" alt="" data-toggle="tooltip" data-placement="right" title="User Menu"/></a>
                     <a href="page-search.html" class="nav-link icon xs-hide"><i class="fa fa-search"></i></a>                    
                     <a href="app-calendar.html"  class="nav-link icon app_inbox xs-hide"><i class="fa fa-calendar"></i></a>
                     <a href="app-contact.html"  class="nav-link icon xs-hide"><i class="fa fa-id-card-o"></i></a>
@@ -51,7 +53,7 @@
             <div class="hright">
                 <div class="dropdown">
                     <a href="javascript:void(0)" class="nav-link icon settingbar"><i class="fa fa-gear fa-spin" data-toggle="tooltip" data-placement="right" title="Settings"></i></a>
-                    <a href="{{ route('admin.logout') }}" class="nav-link icon logoutbar"><i class="fa-solid fa-arrow-right-from-bracket" data-toggle="tooltip" data-placement="right" title="Logout"></i></a>
+                    <a href="{{ route('admin.logout') }}" class="nav-link icon logoutbar"><i class="fa-solid fa-arrow-right-from-bracket flip-horizontal" data-toggle="tooltip" data-placement="right" title="Logout"></i></a>
                     <a href="javascript:void(0)" class="nav-link icon menu_toggle"><i class="fa  fa-align-left"></i></a>
                 </div>            
             </div>
@@ -306,29 +308,6 @@
                 <li class="{{ request()->is('admin/riders') ? 'active' : '' }}"><a href="{{ url('admin/riders') }}"><i class="fa fa-list-ol"></i><span>Riders</span></a></li>
                 <li class="{{ request()->is('admin/customers') ? 'active' : '' }}"><a href="{{ url('admin/customers') }}"><i class="fa fa-calendar-check-o"></i><span>Customers</span></a></li>
                 <li class="{{ request()->is('admin/vehicle-type-rates') ? 'active' : '' }}"><a href="{{ url('admin/vehicle-type-rates') }}"><i class="fa fa-list-ul"></i><span>Vehicle Type Rate</span></a></li>
-                <li><a href="project-ticket-details.html"><i class="icon-tag"></i><span>Ticket Details</span></a></li>
-                <li><a href="project-clients.html"><i class="fa fa-user"></i><span>Clients</span></a></li>
-                <li><a href="project-todo.html"><i class="fa fa-check-square-o"></i><span>Todo List</span></a></li>
-                <li class="g_heading">App</li>
-                <li><a href="app-calendar.html"><i class="fa fa-calendar"></i><span>Calendar</span></a></li>
-                <li><a href="app-chat.html"><i class="fa fa-comments"></i><span>Chat</span></a></li>
-                <li><a href="app-contact.html"><i class="fa fa-address-book"></i><span>Contact</span></a></li>
-                <li><a href="app-filemanager.html"><i class="fa fa-folder"></i><span>FileManager</span></a></li>
-                <li><a href="app-setting.html"><i class="fa fa-gear"></i><span>Setting</span></a></li>
-                <li><a href="page-gallery.html"><i class="fa fa-photo"></i><span>Gallery</span></a></li>
-                <li>
-                    <a href="javascript:void(0)" class="has-arrow arrow-c"><i class="fa fa-lock"></i><span>Authentication</span></a>
-                    <ul>
-                        <li><a href="login.html">Login</a></li>
-                        <li><a href="register.html">Register</a></li>
-                        <li><a href="forgot-password.html">Forgot password</a></li>
-                        <li><a href="404.html">404 error</a></li>
-                        <li><a href="500.html">500 error</a></li>   
-                    </ul>
-                </li>
-                <li class="g_heading">Support</li>
-                <li><a href="javascript:void(0)"><i class="fa fa-support"></i><span>Need Help?</span></a></li>
-                <li><a href="javascript:void(0)"><i class="fa fa-tag"></i><span>ContactUs</span></a></li>
             </ul>
         </nav>        
     </div>
@@ -354,6 +333,8 @@
 <script src="{{ asset('assets/bundles/counterup.bundle.js') }}"></script>
 <script src="{{ asset('assets/bundles/knobjs.bundle.js') }}"></script>
 <script src="{{ asset('assets/bundles/c3.bundle.js') }}"></script>
+<script src="{{ asset('assets/plugins/dropify/js/dropify.min.js') }}"></script>
+<script src="{{ asset('assets/js/form/dropify.js') }}"></script>
 
 <script src="{{ asset('assets/js/core.js') }}"></script>
 <script src="{{ asset('assets/js/page/project-index.js') }}"></script>
