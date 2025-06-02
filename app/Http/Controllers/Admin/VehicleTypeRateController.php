@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleTypeRateController extends Controller
@@ -17,14 +18,9 @@ class VehicleTypeRateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        try{
-            $admin = Auth::user();
-            if (!$admin->tokenCan('admin')) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-            
+        try{            
             $query = VehicleTypeRate::orderBy('id', 'desc');
 
             $perPage = $request->query('per_page', 25);
@@ -41,12 +37,13 @@ class VehicleTypeRateController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return response()->json($data,200);
+            return view('admin.vehicleTypeRates.index', compact('data'));
 
-        }catch(QueryException $e){
-            return response()->json(['DB error' => $e->getMessage()], 401);
         }catch(Exception $e){
-            return response()->json(['error' => $e->getMessage()], 400);
+            Session::flash('error', [
+                    'text' => $e->getMessage(),
+                ]);
+                return redirect()->back();
         }
     }
 
@@ -57,14 +54,10 @@ class VehicleTypeRateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try{
-            $admin = Auth::user();
             DB::beginTransaction();
-            if (!$admin->tokenCan('admin')) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
 
             $validator = Validator::make($request->all(),[
                 'title' => 'required',
@@ -79,9 +72,13 @@ class VehicleTypeRateController extends Controller
                 'current_price_per_min.required' => 'Current price per min is required',
                 'description.required' => 'Description is required',
             ]);
-
-            if ($validator->fails())throw new Exception($validator->errors()->first(),400);
-
+            if ($validator->fails()) {
+                Session::flash('error', [
+                    'text' => $validator->errors()->first(),
+                ]);
+                return redirect()->back();
+            }
+            
             VehicleTypeRate::create([
                 'title' => $request->title,
                 'current_base_price' => $request->current_base_price,
@@ -91,14 +88,17 @@ class VehicleTypeRateController extends Controller
             ]);
 
             DB::commit();
-            return response()->json(['message' => 'Vehicle type rate created successfully'], 200);
+            Session::flash('success', [
+                    'text' => 'Vehicle type rate created successfully',
+                ]);
+                return redirect()->route('admin.vehicleTypeRates.index');
 
-        }catch(QueryException $e){
-            DB::rollBack();
-            return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 400);
+            Session::flash('error', [
+                    'text' => $e->getMessage(),
+                ]);
+                return redirect()->back();
         }
     }
 

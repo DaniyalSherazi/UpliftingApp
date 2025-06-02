@@ -1,5 +1,6 @@
 @extends('Admin.Layout.app')
 @section('title', 'Vehicle Type Rates')
+
 @section('content')
     <div class="row">
         <div class="col-sm-12">
@@ -7,7 +8,8 @@
                 <div class="card-header">
                     <h3 class="card-title">Add Vehicale Type Rate</h3>
                 </div>
-                <form class="card-body">
+                <form id="form" action="{{ route('vehicle-type-rates.store') }}" class="card-body" method="Post">
+                    @csrf
                     <div class="row clearfix">
                         <div class="col-md-6 col-sm-12">
                             <div class="form-group">
@@ -30,7 +32,7 @@
                         <div class="col-md-6 col-sm-12">
                             <div class="form-group">
                                 <label>Current Price Per Mint</label>
-                                <input type="text" name="current_price_per_mint" class="form-control">
+                                <input type="text" name="current_price_per_min" class="form-control">
                             </div>
                         </div>
                         <!-- <div class="col-sm-12">
@@ -43,13 +45,12 @@
                         <div class="col-sm-12">
                             <div class="form-group mt-3">
                                 <label>Description</label>
-                                <textarea rows="4" class="form-control no-resize"
+                                <textarea rows="4" class="form-control no-resize" name="description"
                                     placeholder="Please type what you want..."></textarea>
                             </div>
                         </div>
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <button type="submit" class="btn btn-outline-secondary">Cancel</button>
                         </div>
                     </div>
                 </form>
@@ -57,3 +58,7 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+
+@endpush

@@ -3,16 +3,47 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Support\Facades\Session;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try{
+            
+            $query = User::select('users.*')
+            ->join('customers', 'users.id', '=', 'customers.user_id')->orderBy('id', 'desc');
+
+            $perPage = $request->query('per_page', 25);
+            $searchQuery = $request->query('search');
+
+            if (!empty($searchQuery)) {
+                $customerIds = Customer::where('username', 'like', '%' . $searchQuery . '%')
+                        ->orWhere('email', 'like', '%' . $searchQuery . '%')
+                        ->pluck('id')
+                        ->toArray();
+    
+                    // Filter orders by the found Customers IDs
+                    $query = $query->whereIn('users.id', $customerIds);
+            }
+            // Execute the query with pagination
+            $data = $query->paginate($perPage);
+
+            return view('Admin.Customers.index', compact('data'));
+
+        }catch(Exception $e){
+            Session::flash('error', [
+                'text' => "something went wrong. Please try again",
+            ]);
+            return redirect()->back();
+        }
     }
 
     /**

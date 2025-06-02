@@ -322,6 +322,27 @@
             {{-- Content --}}
             @yield('content')
             {{-- /Content --}}
+
+
+                <div class="section-body">
+                    <footer class="footer">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <a href="templateshub.net">Develop by Daniyal</a>
+                                </div>
+                                <!-- <div class="col-md-6 col-sm-12 text-md-right">
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item"><a href="doc/index.html">Documentation</a></li>
+                                        <li class="list-inline-item"><a href="javascript:void(0)">FAQ</a></li>
+                                        <li class="list-inline-item"><a href="javascript:void(0)"
+                                                class="btn btn-outline-primary btn-icon">Buy Now</a></li>
+                                    </ul>
+                                </div> -->
+                            </div>
+                        </div>
+                    </footer>
+                </div>
         
     </div>    
 </div>
@@ -336,20 +357,24 @@
 <script src="{{ asset('assets/plugins/dropify/js/dropify.min.js') }}"></script>
 <script src="{{ asset('assets/js/form/dropify.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
 <script src="{{ asset('assets/js/core.js') }}"></script>
 <script src="{{ asset('assets/js/page/project-index.js') }}"></script>
+<script src="{{ asset('assets/js/custom.js') }}"></script>
 
 <script>
-        @if(Session::has('success'))
-        toastr['success']('{{ session('success')['text'] }}', 'Successfully');
-        @elseif(Session::has('error'))
-        toastr['error']('{{ session('error')['text'] }}', 'Oops!');
-        @elseif(Session::has('info'))
-        toastr['info']('{{ session('info')['text'] }}', 'Alert!');
-        @elseif(Session::has('warning'))
-        toastr['warning']('{{ session('warning')['text'] }}', 'Alert!');
-        @endif
-    </script>
+    @if(Session::has('success'))
+    toastr['success']('{{ session('success')['text'] }}', 'Successfully');
+    @elseif(Session::has('error'))
+    toastr['error']('{{ session('error')['text'] }}', 'Oops!');
+    @elseif(Session::has('info'))
+    toastr['info']('{{ session('info')['text'] }}', 'Alert!');
+    @elseif(Session::has('warning'))
+    toastr['warning']('{{ session('warning')['text'] }}', 'Alert!');
+    @endif
+</script>
 @stack('script')
 
 </body>
