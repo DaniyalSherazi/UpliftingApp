@@ -28,8 +28,7 @@ Route::prefix('rider')->group(function () {
     Route::post('/signup', [RiderAuth::class, 'signup']);
     Route::post('/forgot-password', [RiderAuth::class, 'forgotPassword']);
     Route::post('/reset-password', [RiderAuth::class, 'resetPassword']);
-    
-
+    Route::put('/verify/{token}/{email}', [RiderAuth::class, 'verification']);
 });
 
 

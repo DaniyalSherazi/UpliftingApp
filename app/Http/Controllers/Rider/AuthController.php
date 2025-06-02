@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rider;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OTPMail;
+use App\Mail\VerifyAccountMail;
 use App\Models\PasswordResetToken;
 use App\Models\Rider;
 use DB;
@@ -73,7 +74,7 @@ class AuthController extends Controller
                 $nat_id_photo = 'rider-nat-id/' . $image_name;
             }
 
-
+            $token = rand(100000, 999999);
             $rider = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -88,13 +89,18 @@ class AuthController extends Controller
                 'lat_long' => $request->lat_long,
                 'device_id' => $request->device_id,
                 'nat_id_photo' => $nat_id_photo,
-                'avatar' => $avatar
-
+                'avatar' => $avatar,
+                'remember_token' => $token
             ]);
 
             Rider::create([
                 'user_id' => $rider->id
             ]);
+            Mail::to($request->email)->send(new VerifyAccountMail([
+                'message' => 'Hi '.$rider->first_name. $rider->last_name.', This is your one time password',
+                'otp' => $token,
+                'is_url'=>false
+            ]));
             DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
         }catch(QueryException $e){
@@ -104,7 +110,36 @@ class AuthController extends Controller
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    } 
+    }
+    
+    public function verification(String $token, String $email): JsonResponse
+    {
+        try{
+            DB::beginTransaction();
+            $validator = Validator::make([
+                'token' => $token,
+                'email' => $email,
+            ],[
+                'token.required' => 'Token is required',
+                'email.required' => 'Email is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+            $user = User::where('remember_token', $token)->where('email', $email)->first();
+            if (!$user) throw new Exception('Invalid Request');
+
+            $user->email_verified_at = now();
+            $user->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Your account has been verified successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function signin(Request $request): JsonResponse
     {
@@ -123,6 +158,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             if (!$user) throw new Exception('User not found', 404);
+            if (!$user->email_verified_at) throw new Exception('Email not verified', 404);
 
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials'], 401);
@@ -224,7 +260,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             Mail::to($request->email)->send(new OTPMail([
-                'message' => 'Hi '.$user->name.', This is your one time password',
+                'message' => 'Hi '.$user->first_name. $user->last_name. 'This is your one time password',
                 'otp' => $token,
                 'is_url'=>false
             ]));
