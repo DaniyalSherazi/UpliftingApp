@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Session;
@@ -102,5 +103,23 @@ class CustomerController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updateStatus(Request $request)
+    {
+        try{
+            $data = User::find($request->customer_id);
+            if($request->status ==1){
+                $data->status = 'active';
+            }else{
+                $data->status = 'inactive';
+            }
+            $data->save();
+            return response()->json(['success' => 'Status updated successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 }

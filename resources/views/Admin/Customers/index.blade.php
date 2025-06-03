@@ -64,9 +64,12 @@
                                         </td>
                                         <td>
                                             <label class="custom-switch m-0">
-                                                <input type="checkbox" value="1" class="custom-switch-input" checked>
+                                                <input type="checkbox" name="status" value="1" class="custom-switch-input customer-status-toggle" 
+                                                data-customer-id="{{ $customer->id }}"
+                                                @if ($customer->status == 'active') checked @endif
+                                                >
                                                 <span class="custom-switch-indicator"></span>
-                                            </label>                                            
+                                            </label>                                         
                                         </td>    
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -97,3 +100,34 @@
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+<script>
+  $(document).ready(function(){
+    $('.customer-status-toggle').on('change', function() {
+        var checkbox = $(this);
+        var customerId = checkbox.data('customer-id');
+        var status = checkbox.is(':checked') ? 1 : 0;
+
+        $.ajax({
+            url: "{{ route('admin.customers.updateStatus') }}",
+            method: 'POST',
+            data: {
+                customer_id: customerId,
+                status: status,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr['success']('Status updated successfully', 'Successfully');
+                    window.location.reload();
+                }else{
+                    toastr['error'](response.message, 'Oops!');
+                }
+            }
+        })
+    });
+  });
+</script>
+@endpush

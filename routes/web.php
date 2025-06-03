@@ -32,7 +32,9 @@ Route::prefix('admin')->group(function () {
             Route::resource('/riders', RiderController::class);
             Route::get('/riders/approved/{id}/{status}', [RiderController::class, 'approvedStatus'])->name('riders.approved');
             Route::post('/riders/update-status', [RiderController::class, 'updateStatus'])->name('riders.updateStatus');
+
             Route::resource('/customers', CustomerController::class);
+            Route::post('/customers/update-status', [CustomerController::class, 'updateStatus'])->name('customers.updateStatus');
             Route::resource('/vehicle-type-rates', VehicleTypeRateController::class);
         });
     });
