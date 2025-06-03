@@ -38,6 +38,7 @@ Route::prefix('customer')->group(function () {
     Route::post('/signup', [CustomerAuth::class, 'signup']);
     Route::post('/forgot-password', [CustomerAuth::class, 'forgotPassword']);
     Route::post('/reset-password', [CustomerAuth::class, 'resetPassword']);
+    Route::put('/verify/{token}/{email}', [CustomerAuth::class, 'verification']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

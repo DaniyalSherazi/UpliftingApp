@@ -68,7 +68,20 @@
                                                 <span class="custom-switch-indicator"></span>
                                             </label>                                            
                                         </td>    
-                                        <td><span class="text-warning">Medium</span></td>                                    
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="dropdown d-flex position-absolute ">
+                                                <a class="nav-link icon d-none d-md-flex btn btn-default btn-icon ml-2"
+                                                    data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></a>
+                                                <div class="dropdown-menu ">
+                                                    <a class="dropdown-item" href="{{ route('admin.customers.show', $customer->id) }}"><i class="dropdown-icon fa fa-eye"></i>
+                                                        View</a>
+                                                    <a class="dropdown-item" href="{{ route('admin.customers.edit', $customer->id) }}"><i
+                                                            class="dropdown-icon fa fa-pencil"></i> Edit</a>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </td>                                      
                                     </tr>
                                     @else
                                     <tr>

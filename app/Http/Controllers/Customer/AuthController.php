@@ -32,8 +32,8 @@ class AuthController extends Controller
                 'phone' => 'required',
                 'password' => 'required',
                 'nationality' => 'required',
-                'nat_id' => 'required',
-                'nat_id_photo' => 'required',
+                'nat_id' => 'nullable',
+                'nat_id_photo' => 'nullable',
                 'avatar' => 'nullable',
                 'device_id' => 'required',
                 'lat_long' => 'required',
@@ -269,6 +269,52 @@ class AuthController extends Controller
         try{
             Auth::user()->tokens()->delete();
             return response()->json(['message' => 'Logout successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function editProfile(Request $request): JsonResponse
+    {
+        try{
+            $customer  = Auth::user();
+            $validator = Validator::make($request->all(),[
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|email',
+
+            ],[
+                'first_name.required' => 'First Name is required',
+                'last_name.required' => 'Last Name is required',
+                'email.required' => 'Email is required',
+                'email.email' => 'Invalid email format',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            $old_avatar = $customer->avatar;
+            if ($request->hasFile('avatar')) {
+                $avatar = $request->file('avatar');
+                $avatar_name = time() . '.' . $avatar->getClientOriginalExtension();
+                $avatar->move(public_path('customer-avatar'), $avatar_name);
+                $customer->update([
+                    'avatar' => $avatar_name,
+                ]);
+                if ($old_avatar && file_exists(public_path('customer-avatar' . $old_avatar))) {
+                    unlink(public_path('customer-avatar' . $old_avatar));
+                }
+            }
+
+            $customer->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+            ]);
+
+            return response()->json(['message' => 'Profile updated successfully'], 200);
+
         }catch(QueryException $e){
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){

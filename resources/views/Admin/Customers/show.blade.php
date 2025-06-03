@@ -1,5 +1,5 @@
 @extends('admin.layout.app')
-@section('title', 'Riders Details')
+@section('title', 'Customer Details')
 @section('content')
 
     <div class="section-body mt-3">
@@ -28,7 +28,7 @@
                     </div>
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Rider Info</h3>
+                            <h3 class="card-title">Customer Info</h3>
                         </div>
                         <div class="card-body">
                             <ul class="list-group">
@@ -77,27 +77,6 @@
                                     <h5 class="number mb-0 font-32 counter">{{$data->current_rating}}</h5>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Rider License</h3>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <small class="text-muted">license_number: </small>
-                                    <p class="mb-0">{{ $data->license_number }}</p>
-                                </li>
-                                <li class="list-group-item">
-                                    <small class="text-muted">license_expiry: </small>
-                                    <p class="mb-0">{{ $data->license_expiry }}</p>
-                                </li>
-                                <li class="list-group-item">
-                                    <small class="text-muted">License Photo: </small>
-                                    <img class="img-fluid w-50" src="{{ asset($data->license_photo) }}" alt="">
-                                </li>
-                            </ul>
                         </div>
                     </div>
                     @if($data->is_approved == 'pending')

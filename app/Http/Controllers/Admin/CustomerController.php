@@ -67,7 +67,17 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try{
+            $data = User::select('users.*','customers.status as online_status','customers.*','users.id as user_id')
+            ->join('customers', 'users.id', '=', 'customers.user_id')->where('users.id', $id)->first();
+            
+            return view('admin.customers.show', compact('data'));
+        }catch(Exception $e){
+            Session::flash('error', [
+                'text' => "something went wrong. Please try again",
+            ]);
+            return redirect()->back();
+        }
     }
 
     /**
