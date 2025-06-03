@@ -1,4 +1,4 @@
-@extends('Admin.Layout.app')
+@extends('admin.layout.app')
 @section('title', 'Vehicle Type Rates')
 
 @section('content')

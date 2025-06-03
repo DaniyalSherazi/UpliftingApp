@@ -31,6 +31,7 @@ class User extends Authenticatable
         'lat_long',
         'device_id',
         'status',
+        'is_approved',
         'role',
         
     ];

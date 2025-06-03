@@ -373,9 +373,9 @@
     toastr['info']('{{ session('info')['text'] }}', 'Alert!');
     @elseif(Session::has('warning'))
     toastr['warning']('{{ session('warning')['text'] }}', 'Alert!');
-    @endif
+    @endif         
 </script>
-@stack('script')
+@stack('scripts')
 
 </body>
 

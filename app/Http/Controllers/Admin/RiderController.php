@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class RiderController extends Controller
 {
@@ -39,7 +40,7 @@ class RiderController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return view('Admin.Riders.index', compact('data'));
+            return view('admin.riders.index', compact('data'));
 
         }catch(Exception $e){
             Session::flash('error', [
@@ -63,7 +64,17 @@ class RiderController extends Controller
      */
     public function show(string $id)
     {
-        
+        try{
+            $data = User::select('users.*','riders.status as online_status','riders.*','users.id as user_id')
+            ->join('riders', 'users.id', '=', 'riders.user_id')->where('users.id', $id)->first();
+            
+            return view('admin.riders.show', compact('data'));
+        }catch(Exception $e){
+            Session::flash('error', [
+                'text' => "something went wrong. Please try again",
+            ]);
+            return redirect()->back();
+        }
     }
 
     /**
@@ -71,7 +82,7 @@ class RiderController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        
     }
 
     /**
@@ -88,5 +99,59 @@ class RiderController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updateStatus(Request $request)
+    {
+        try{
+            $data = User::find($request->rider_id);
+            if($request->status ==1){
+                $data->status = 'active';
+            }else{
+                $data->status = 'inactive';
+            }
+            $data->save();
+            return response()->json(['success' => 'Status updated successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function approvedStatus(string $id, string $status)
+    {
+        try{
+            $data = User::find($id);
+            if (!$data) {
+                Session::flash('error', [
+                    'text' => "Rider not found",
+                ]);
+                return redirect()->back();
+            }
+            $validator = Validator::make([
+                'status' => $status,
+            ], [
+                'status.required' => 'Status is required',
+                'status.in:approved,suspended' => 'Status must be approved or rejected',
+            ]);
+            if ($validator->fails()) {
+                Session::flash('error', [
+                    'text' => $validator->errors()->first(),
+                ]);
+                return redirect()->back();
+            }
+            $data->is_approved = $status;
+            $data->save();
+            Session::flash('success', [
+                'text' => "Rider Approval updated successfully",
+            ]);
+            return redirect()->back();
+        }catch(Exception $e){
+            Session::flash('error', [
+                'text' => "something went wrong. Please try again",
+            ]);
+            return redirect()->back();
+        }
     }
 }

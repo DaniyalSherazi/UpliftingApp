@@ -28,6 +28,7 @@ return new class extends Migration
             $table->longText('device_id');
             $table->enum('role', ['customer', 'rider'])->default('customer');
             $table->enum('status', ['active', 'inactive','suspended','pending'])->default('active');
+            $table->enum('is_approved', ['approved','suspended','pending'])->default('pending');
             $table->longText('google_id')->nullable();
             $table->longText('apple_id')->nullable();
             $table->rememberToken();

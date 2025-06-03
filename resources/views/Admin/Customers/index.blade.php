@@ -1,4 +1,4 @@
-@extends('Admin.Layout.app')
+@extends('admin.layout.app')
 @section('title', 'Customers')
 @section('content')
 
@@ -38,7 +38,16 @@
                                 @foreach ($data as $customer)
                                     @if (!empty($customer) )
                                         <tr>
-                                        <td><img src="{{ asset($customer->avatar) }}" alt="Avatar" class="w30 rounded-circle mr-2"> <span>{{ $customer->first_name }} {{ $customer->last_name }}</span>
+                                        <td class="d-flex align-items-center">                                            
+                                            @if($customer->avatar != null)
+                                                <img src="{{ asset($customer->avatar) }}" alt="Avatar" class="w30 rounded-circle mr-2">
+                                            @else
+                                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center mr-2"
+                                                    style="width: 30px; height: 30px; background-color: #ccc; font-weight: bold; font-size: 14px; color: #fff;">
+                                                    {{ strtoupper(substr($customer->first_name ?? $customer->last_name, 0, 2)) }}
+                                                </div>
+                                            @endif
+                                            <span>{{ $customer->first_name }} {{ $customer->last_name }}</span>
                                         </td>
                                         <td>{{ $customer->email }}</td>
                                         <td>{{ $customer->phone }}</td>

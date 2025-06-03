@@ -36,11 +36,11 @@ class CustomerController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return view('Admin.Customers.index', compact('data'));
+            return view('admin.customers.index', compact('data'));
 
         }catch(Exception $e){
             Session::flash('error', [
-                'text' => "something went wrong. Please try again",
+                'text' => $e->getMessage(),
             ]);
             return redirect()->back();
         }

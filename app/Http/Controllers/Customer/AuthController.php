@@ -83,6 +83,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => 'customer',
                 'status' => 'active',
+                'is_approved' => 'approved',
                 'lat_long' => $request->lat_long,
                 'device_id' => $request->device_id,
                 'nat_id_photo' => $nat_id_photo,

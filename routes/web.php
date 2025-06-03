@@ -28,9 +28,13 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-        Route::resource('/riders', RiderController::class);
-        Route::resource('/customers', CustomerController::class);
-        Route::resource('/vehicle-type-rates', VehicleTypeRateController::class);
+         Route::as('admin.')->group(function () {
+            Route::resource('/riders', RiderController::class);
+            Route::get('/riders/approved/{id}/{status}', [RiderController::class, 'approvedStatus'])->name('riders.approved');
+            Route::post('/riders/update-status', [RiderController::class, 'updateStatus'])->name('riders.updateStatus');
+            Route::resource('/customers', CustomerController::class);
+            Route::resource('/vehicle-type-rates', VehicleTypeRateController::class);
+        });
     });
 
 

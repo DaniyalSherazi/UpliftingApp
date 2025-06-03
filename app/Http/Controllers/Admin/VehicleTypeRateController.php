@@ -37,7 +37,7 @@ class VehicleTypeRateController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return view('admin.vehicleTypeRates.index', compact('data'));
+            return view('admin.vehicle-type-rates.index', compact('data'));
 
         }catch(Exception $e){
             Session::flash('error', [
@@ -48,7 +48,7 @@ class VehicleTypeRateController extends Controller
     }
 
     public function create(){
-        return view('admin.vehicleTypeRates.create');
+        return view('admin.vehicle-type-rates.create');
     }
 
     /**
@@ -91,7 +91,7 @@ class VehicleTypeRateController extends Controller
             Session::flash('success', [
                     'text' => 'Vehicle type rate created successfully',
                 ]);
-                return redirect()->route('admin.vehicleTypeRates.index');
+                return redirect()->route('admin.vehicle-type-rates.index');
 
         }catch(Exception $e){
             DB::rollBack();
