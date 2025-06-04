@@ -376,23 +376,63 @@ class AuthController extends Controller
         }
     }
 
-    public function broadcast(Request $request): JsonResponse
+    public function broadcast(Request $request)
     {
-        try{
+        try {
             $user = Auth::user();
-            $response = Broadcast::auth($request);
-    
-            // Ensure response is always an array
-            $responseData = is_array($response) ? $response : json_decode($response->getContent(), true);
-        
-            if (isset($responseData['channel_data']) && is_string($responseData['channel_data'])) {
-                // Decode channel_data only if it is a string
-                $responseData['channel_data'] = json_decode($responseData['channel_data'], true);
+            
+            if (!$user) {
+                return response()->json(['error' => 'Unauthenticated'], 401);
             }
-        
-            return response()->json($responseData);
-        }catch(Exception $e){
-            return response()->json(['error' => 'Unable to broadcast'], 400);
+            
+            $socketId = $request->input('socket_id');
+            $channelName = $request->input('channel_name');
+            
+            if (!$socketId || !$channelName) {
+                return response()->json(['error' => 'Missing socket_id or channel_name'], 400);
+            }
+            
+            
+            // Remove private- prefix if it exists
+            $cleanChannelName = str_starts_with($channelName, 'private-') 
+                ? substr($channelName, 8) 
+                : $channelName;
+            
+            // Check if it's your nearbyriders channel
+            if (preg_match('/^nearbyriders\.(\d+)$/', $cleanChannelName, $matches)) {
+                $channelUserId = (int)$matches[1];
+     
+                
+                // Check authorization
+                if ($user->id !== $channelUserId) {
+                    return response()->json(['error' => 'Unauthorized for this channel'], 403);
+                }
+                
+                // Generate Pusher auth signature
+                $pusherKey = config('broadcasting.connections.pusher.key');
+                $pusherSecret = config('broadcasting.connections.pusher.secret');
+                
+                if (!$pusherKey || !$pusherSecret) {
+                    return response()->json(['error' => 'Broadcasting not configured'], 500);
+                }
+                
+                // Create the string to sign (must include private- prefix for private channels)
+                $stringToSign = $socketId . ':private-' . $cleanChannelName;
+                $signature = hash_hmac('sha256', $stringToSign, $pusherSecret);
+                
+                $authString = $pusherKey . ':' . $signature;
+                
+                
+                return response()->json([
+                    'auth' => $authString
+                ]);
+            }
+            
+            return response()->json(['error' => 'Invalid channel format'], 400);
+            
+        } catch(Exception $e) {
+            
+            return response()->json(['error' => 'unable to broadcast'], 500);
         }
     }
 }

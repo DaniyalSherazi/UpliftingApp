@@ -16,7 +16,10 @@ use App\Http\Controllers\Admin\RiderController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/optimize-clear', function () {
+    Artisan::call('optimize:clear');
+    return 'Optimization cache cleared!';
+});
 
 
 Route::prefix('admin')->group(function () {
