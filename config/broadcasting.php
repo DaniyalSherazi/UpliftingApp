@@ -35,12 +35,14 @@ return [
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'encrypted' => true,
             'options' => [
-                'host' => env('PUSHER_HOST') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com',
-                'port' => env('PUSHER_PORT', 443),
-                'scheme' => env('PUSHER_SCHEME', 'https'),
+                'debug' => true,
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'useTLS' => true,
                 'encrypted' => true,
-                'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                'authEndpoint' => 'https://uplifting.zetdigi.com/api/broadcasting/auth',
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html

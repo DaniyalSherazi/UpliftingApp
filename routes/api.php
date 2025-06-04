@@ -26,6 +26,7 @@ use App\Http\Controllers\Customer\AuthController as CustomerAuth;
 Route::prefix('rider')->group(function () {
     Route::post('/signin', [RiderAuth::class, 'signin']);
     Route::post('/signup', [RiderAuth::class, 'signup']);
+    Route::post('/resend-code', [RiderAuth::class, 'resendCode']);
     Route::post('/forgot-password', [RiderAuth::class, 'forgotPassword']);
     Route::post('/reset-password', [RiderAuth::class, 'resetPassword']);
     Route::put('/verify/{token}/{email}', [RiderAuth::class, 'verification']);
@@ -36,6 +37,7 @@ Route::prefix('rider')->group(function () {
 Route::prefix('customer')->group(function () {
     Route::post('/signin', [CustomerAuth::class, 'signin']);
     Route::post('/signup', [CustomerAuth::class, 'signup']);
+    Route::post('/resend-code', [CustomerAuth::class, 'resendCode']);
     Route::post('/forgot-password', [CustomerAuth::class, 'forgotPassword']);
     Route::post('/reset-password', [CustomerAuth::class, 'resetPassword']);
     Route::put('/verify/{token}/{email}', [CustomerAuth::class, 'verification']);
@@ -73,7 +75,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('/profile', [CustomerAuth::class, 'profile']);
         Route::post('/edit-profile', [CustomerAuth::class, 'editProfile']);
+        Route::post('/update-lat-long', [CustomerAuth::class, 'updateLatLong']);
         Route::post('/change-password', [CustomerAuth::class, 'changePassword']);
+        Route::post('/broadcasting/auth', [CustomerAuth::class, 'broadcast']);
         Route::get('/logout', [CustomerAuth::class, 'logout']);
     });
     

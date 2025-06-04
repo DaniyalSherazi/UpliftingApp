@@ -68,7 +68,7 @@ class AuthController extends Controller
                 $nat_id_photo = 'rider-nat-id/' . $image_name;
             }
 
-            $token = rand(100000, 999999);
+            $token = rand(1000, 9999);
             $rider = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -245,7 +245,7 @@ class AuthController extends Controller
             if ($tokenExist) PasswordResetToken::where('email', $request->email)->delete();
 
             //  otp 6 number
-            $token = rand(100000, 999999);
+            $token = rand(1000, 9999);
             PasswordResetToken::insert([
                 'email' => $request->email,
                 'token' => $token,

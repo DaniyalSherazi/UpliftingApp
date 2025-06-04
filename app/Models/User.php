@@ -32,6 +32,7 @@ class User extends Authenticatable
         'device_id',
         'status',
         'is_approved',
+        'remember_token',
         'role',
         
     ];

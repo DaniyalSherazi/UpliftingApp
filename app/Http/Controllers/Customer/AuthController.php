@@ -14,6 +14,7 @@ use Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\PasswordResetToken;
@@ -71,7 +72,7 @@ class AuthController extends Controller
                 $nat_id_photo = 'customer-nat-id/' . $image_name;
             }
 
-            $token = rand(100000, 999999);
+            $token = rand(1000, 9999);
             $customer = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -163,10 +164,16 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid credentials'], 401);
             }
 
-            $user->tokens()->delete();
-            $token = $user->createToken('customer-token', ['customer'])->plainTextToken;
+            $is_verify = 0;
+            if ($user->email_verified_at != null) {
+                $is_verify = 1;
+                $user->tokens()->delete();
+                $token = $user->createToken('customer-token', ['customer'])->plainTextToken;
+                return response()->json(['token' => $token, 'is_verify' => $is_verify], 200);
+            }
 
-            return response()->json(['token' => $token], 200);
+            return response()->json(['is_verify' => $is_verify], 200);
+
 
         }catch(QueryException $e){
             return response()->json(['DB error' => $e->getMessage()], 500);
@@ -196,7 +203,7 @@ class AuthController extends Controller
             if ($tokenExist) PasswordResetToken::where('email', $request->email)->delete();
 
             //  otp 6 number
-            $token = rand(100000, 999999);
+            $token = rand(1000, 9999);
             PasswordResetToken::insert([
                 'email' => $request->email,
                 'token' => $token,
@@ -319,6 +326,73 @@ class AuthController extends Controller
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function resendCode(Request $request): JsonResponse
+    {
+        try{
+            $validator = Validator::make($request->all(),[
+                'email' => 'required|email',
+            ],[
+                'email.required' => 'Email is required',
+                'email.email' => 'Invalid email format',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            $customer = User::where('email', $request->email)->first();
+            if (!$customer) throw new Exception('User not found', 404);
+            $token = rand(1000, 9999);
+            $customer->update([
+                'remember_token' => $token
+            ]);
+            Mail::to($request->email)->send(new VerifyAccountMail([
+                'message' => 'Hi '.$customer->first_name. $customer->last_name.', This is your one time password',
+                'otp' => $token,
+                'is_url'=>false
+            ]));
+            return response()->json(['token' => $token], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateLatLong(Request $request): JsonResponse
+    {
+        try{
+            $customer = Auth::user();
+            $customer->update([
+                'lat_long'=> [$request->lat, $request->long]
+            ]);
+            $riders = getNearbyRiders($request->lat, $request->long);
+            return response()->json(['message' => 'Location updated successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function broadcast(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $response = Broadcast::auth($request);
+    
+            // Ensure response is always an array
+            $responseData = is_array($response) ? $response : json_decode($response->getContent(), true);
+        
+            if (isset($responseData['channel_data']) && is_string($responseData['channel_data'])) {
+                // Decode channel_data only if it is a string
+                $responseData['channel_data'] = json_decode($responseData['channel_data'], true);
+            }
+        
+            return response()->json($responseData);
+        }catch(Exception $e){
+            return response()->json(['error' => 'Unable to broadcast'], 400);
         }
     }
 }
