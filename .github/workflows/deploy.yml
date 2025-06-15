@@ -1,0 +1,30 @@
+name: Deploy Laravel to SFTP
+
+on:
+  push:
+    branches:
+      - main  # change if your main branch is named differently
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Node & PHP dependencies
+      run: |
+        composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+        npm install && npm run build || true  # optional if using Laravel Mix/Vite
+
+    - name: Upload via SFTP
+      uses: pressidium/lftp-mirror-action@v1.2.1
+      with:
+        host: ${{ secrets.SFTP_HOST }}
+        port: ${{ secrets.SFTP_PORT }}
+        user: ${{ secrets.SFTP_USERNAME }}
+        pass: ${{ secrets.SFTP_PASSWORD }}
+        localDir: '.'  # root of repo
+        remoteDir: ${{ secrets.SFTP_REMOTE_PATH }}
+        options: '--delete --verbose --exclude .git* --exclude node_modules --exclude tests --exclude .github'
