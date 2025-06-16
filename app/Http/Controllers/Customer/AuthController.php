@@ -124,21 +124,23 @@ class AuthController extends Controller
                 'token.required' => 'Token is required',
                 'email.required' => 'Email is required',
             ]);
-
+            $is_verify = User::where('email', $email)->first();
+            if($is_verify->email_verified_at != null)throw new Exception('Email already verified');
             if($validator->fails())throw new Exception($validator->errors()->first(),400);
             $user = User::where('remember_token', $token)->where('email', $email)->first();
             if (!$user) throw new Exception('Invalid Request');
 
             $user->email_verified_at = now();
+            $user->remember_token = null;
             $user->save();
 
             DB::commit();
 
             return response()->json(['message' => 'Your account has been verified successfully'], 200);
         }catch(QueryException $e){
-            return response()->json(['DB error' => $e->getMessage()], 500);
+            return response()->json(['DB error' => $e->getMessage()], 400);
         }catch(Exception $e){
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 

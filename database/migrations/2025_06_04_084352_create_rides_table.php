@@ -20,7 +20,7 @@ return new class extends Migration
             $table->longText('pickup_location');
             $table->enum('status', ['pending', 'accepted', 'cancelled', 'completed'])->default('pending');
             $table->unsignedBigInteger('promo_code_id')->nullable();
-            $table->foreign('promo_code_id')->references('id')->on('promo_codes');
+            $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onUpdate('cascade')->onDelete('cascade');
             $table->decimal('distance', 8, 2)->nullable();
             $table->bigInteger('duration')->nullable();  
             $table->decimal('base_fare', 8, 2);
