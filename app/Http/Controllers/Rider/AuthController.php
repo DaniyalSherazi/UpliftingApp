@@ -119,11 +119,14 @@ class AuthController extends Controller
                 'email.required' => 'Email is required',
             ]);
 
+            $is_verify = User::where('email', $email)->first();
+            if($is_verify->email_verified_at != null)throw new Exception('Email already verified');
             if($validator->fails())throw new Exception($validator->errors()->first(),400);
             $user = User::where('remember_token', $token)->where('email', $email)->first();
             if (!$user) throw new Exception('Invalid Request');
 
             $user->email_verified_at = now();
+            $user->remember_token = null;
             $user->save();
 
             DB::commit();
@@ -357,6 +360,38 @@ class AuthController extends Controller
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){
             DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function resendCode(Request $request): JsonResponse
+    {
+        try{
+            $validator = Validator::make($request->all(),[
+                'email' => 'required|email',
+            ],[
+                'email.required' => 'Email is required',
+                'email.email' => 'Invalid email format',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            $rider = User::where('email', $request->email)->first();
+            if (!$rider) throw new Exception('User not found', 404);
+            if($rider->email_verified_at != null)throw new Exception('Email already verified');
+            $token = rand(1000, 9999);
+            $rider->update([
+                'remember_token' => $token
+            ]);
+            Mail::to($request->email)->send(new VerifyAccountMail([
+                'message' => 'Hi '.$rider->first_name. $rider->last_name.', This is your one time password',
+                'otp' => $token,
+                'is_url'=>false
+            ]));
+            return response()->json(['token' => $token], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
