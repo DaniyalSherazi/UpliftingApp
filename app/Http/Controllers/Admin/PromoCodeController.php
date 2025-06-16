@@ -26,7 +26,7 @@ class PromoCodeController extends Controller
                 $customerIds = PromoCode::where('code', 'like', '%' . $searchQuery . '%')
                         ->toArray();
     
-                    // Filter orders by the found Pomocodes IDs
+                    // Filter orders by the found Pomo codes IDs
                     $query = $query->whereIn('users.id', $customerIds);
             }
             // Execute the query with pagination
