@@ -32,7 +32,7 @@ class PromoCodeController extends Controller
             // Execute the query with pagination
             $data = $query->paginate($perPage);
 
-            return view('admin.promo-code.index', compact('data'));
+            return view('admin.promo-codes.index', compact('data'));
 
         }catch(Exception $e){
             Session::flash('error', [
