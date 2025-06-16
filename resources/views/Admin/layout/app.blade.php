@@ -308,6 +308,7 @@
                 <li class="{{ request()->is('admin/riders') ? 'active' : '' }}"><a href="{{ url('admin/riders') }}"><i class="fa fa-list-ol"></i><span>Riders</span></a></li>
                 <li class="{{ request()->is('admin/customers') ? 'active' : '' }}"><a href="{{ url('admin/customers') }}"><i class="fa fa-calendar-check-o"></i><span>Customers</span></a></li>
                 <li class="{{ request()->is('admin/vehicle-type-rates') ? 'active' : '' }}"><a href="{{ url('admin/vehicle-type-rates') }}"><i class="fa fa-list-ul"></i><span>Vehicle Type Rate</span></a></li>
+                <li class="{{ request()->is('admin/promo-codes') ? 'active' : '' }}"><a href="{{ url('admin/promo-codes') }}"><i class="fa fa-list-ul"></i><span>Promo Codes</span></a></li>
             </ul>
         </nav>        
     </div>
