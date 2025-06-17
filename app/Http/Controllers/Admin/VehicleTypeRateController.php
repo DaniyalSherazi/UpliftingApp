@@ -109,10 +109,10 @@ class VehicleTypeRateController extends Controller
     public function show(string $id, Request $request): JsonResponse
     {
         try{
-            $admin = Auth::user();
-            if (!$admin->tokenCan('admin')) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
+            // $admin = Auth::user();
+            // if (!$admin->tokenCan('admin')) {
+            //     return response()->json(['error' => 'Unauthorized'], 401);
+            // }
 
             $data = VehicleTypeRate::find($id);
             return response()->json($data,200);
@@ -128,49 +128,49 @@ class VehicleTypeRateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
-    {
-        try{
-            $admin = Auth::user();
-            DB::beginTransaction();
-            if (!$admin->tokenCan('admin')) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
+    // public function update(Request $request, string $id): JsonResponse
+    // {
+    //     try{
+    //         $admin = Auth::user();
+    //         DB::beginTransaction();
+    //         if (!$admin->tokenCan('admin')) {
+    //             return response()->json(['error' => 'Unauthorized'], 401);
+    //         }
 
-            $validator = Validator::make($request->all(),[
-                'title' => 'required',
-                'current_base_price' => 'required',
-                'current_price_per_km' => 'required',
-                'current_price_per_min' => 'required',
-                'description' => 'required',
-            ],[
-                'title.required' => 'Title is required',
-                'current_base_price.required' => 'Current base price is required',
-                'current_price_per_km.required' => 'Current price per km is required',
-                'current_price_per_min.required' => 'Current price per min is required',
-                'description.required' => 'Description is required',
-            ]);
+    //         $validator = Validator::make($request->all(),[
+    //             'title' => 'required',
+    //             'current_base_price' => 'required',
+    //             'current_price_per_km' => 'required',
+    //             'current_price_per_min' => 'required',
+    //             'description' => 'required',
+    //         ],[
+    //             'title.required' => 'Title is required',
+    //             'current_base_price.required' => 'Current base price is required',
+    //             'current_price_per_km.required' => 'Current price per km is required',
+    //             'current_price_per_min.required' => 'Current price per min is required',
+    //             'description.required' => 'Description is required',
+    //         ]);
 
-            if ($validator->fails())throw new Exception($validator->errors()->first(),400);
+    //         if ($validator->fails())throw new Exception($validator->errors()->first(),400);
 
-            VehicleTypeRate::find($id)->update([
-                'title' => $request->title,
-                'current_base_price' => $request->current_base_price,
-                'current_price_per_km' => $request->current_price_per_km,
-                'current_price_per_min' => $request->current_price_per_min,
-                'description' => $request->description
-            ]);
+    //         VehicleTypeRate::find($id)->update([
+    //             'title' => $request->title,
+    //             'current_base_price' => $request->current_base_price,
+    //             'current_price_per_km' => $request->current_price_per_km,
+    //             'current_price_per_min' => $request->current_price_per_min,
+    //             'description' => $request->description
+    //         ]);
 
-            DB::commit();
-            return response()->json(['message' => 'Vehicle type rate updated successfully'], 200);
-        }catch(QueryException $e){
-            DB::rollBack();
-            return response()->json(['DB error' => $e->getMessage()], 500);
-        }catch(Exception $e){
-            DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
-    }
+    //         DB::commit();
+    //         return response()->json(['message' => 'Vehicle type rate updated successfully'], 200);
+    //     }catch(QueryException $e){
+    //         DB::rollBack();
+    //         return response()->json(['DB error' => $e->getMessage()], 500);
+    //     }catch(Exception $e){
+    //         DB::rollBack();
+    //         return response()->json(['error' => $e->getMessage()], 400);
+    //     }
+    // }
 
     /**
      * Remove the specified resource from storage.
