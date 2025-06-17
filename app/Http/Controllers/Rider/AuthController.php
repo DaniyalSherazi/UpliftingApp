@@ -171,7 +171,7 @@ class AuthController extends Controller
             $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
 
 
-            if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => '', 'token' => $token, 'user' => $user,], 200);
+            if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => 'Lets complete your profile', 'token' => $token, 'user' => $user,], 200);
 
             // required list
             $pp = true;
