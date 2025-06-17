@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Add Vehicale Type Rate</h3>
                 </div>
-                <form id="form" action="{{ route('admin.vehicle-type-rates.store') }}" class="card-body" method="Post">
+                <form id="form" action="{{ route('vehicle-type-rates.store') }}" class="card-body" method="Post">
                     @csrf
                     <div class="row clearfix">
                         <div class="col-md-6 col-sm-12">
