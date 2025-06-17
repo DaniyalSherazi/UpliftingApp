@@ -500,7 +500,6 @@ class AuthController extends Controller
         }
     }
 
-
     // verifications apis
 
     public function profilePicture(Request $request): JsonResponse
