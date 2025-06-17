@@ -39,7 +39,9 @@ Route::prefix('admin')->group(function () {
 
             Route::resource('/customers', CustomerController::class);
             Route::post('/customers/update-status', [CustomerController::class, 'updateStatus'])->name('customers.updateStatus');
-            Route::resource('/vehicle-type-rates', VehicleTypeRateController::class);
+            Route::get('/vehicle-type-rates', [VehicleTypeRateController::class,'index'])->name('vehicle-type-rates.index');
+            Route::get('/vehicle-type-rates', [VehicleTypeRateController::class,'create'])->name('vehicle-type-rates.create');
+            Route::post('/vehicle-type-rates', [VehicleTypeRateController::class,'store'])->name('vehicle-type-rates.store');
 
             Route::resource('/promo-codes', PromoCodeController::class);
             Route::get('/promocode/approved/{id}/{status}', [PromoCodeController::class, 'approvedStatus'])->name('promocode.approved');
