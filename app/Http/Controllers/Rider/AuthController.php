@@ -164,7 +164,7 @@ class AuthController extends Controller
             }
 
             $rider_info = Rider::where('user_id', $user->id)->first();
-            $vehicle = Vehicle::where('user_id', $user->id)->first();
+            $vehicle = Vehicle::where('vehicle_of', $user->id)->first();
 
             if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => 'Please complete your profile'], 401);
 
