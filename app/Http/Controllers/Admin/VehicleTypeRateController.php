@@ -57,7 +57,6 @@ class VehicleTypeRateController extends Controller
     public function store(Request $request)
     {
         try{
-            dd('helo');
             DB::beginTransaction();
 
             $validator = Validator::make($request->all(),[
