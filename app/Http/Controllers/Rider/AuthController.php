@@ -415,7 +415,6 @@ class AuthController extends Controller
 
             $rider = User::where('email', $request->email)->first();
             if (!$rider) throw new Exception('User not found', 404);
-            if($rider->email_verified_at != null)throw new Exception('Email already verified');
             $token = rand(1000, 9999);
             $rider->update([
                 'remember_token' => $token
