@@ -166,7 +166,12 @@ class AuthController extends Controller
             $rider_info = Rider::where('user_id', $user->id)->first();
             $vehicle = Vehicle::where('vehicle_of', $user->id)->first();
 
-            if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => 'Please complete your profile'], 401);
+
+            $user->tokens()->delete();
+            $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
+
+
+            if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => 'Please complete your profile', 'token' => $token, 'user' => $user,], 401);
 
             // required list
             $pp = true;
@@ -186,13 +191,7 @@ class AuthController extends Controller
                 'Registration Certificate' => $rc,
                 'Background Verification' => $background_verification
             ];
-            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile', 'list' => $list], 401);
-
-            
-
-            
-            $user->tokens()->delete();
-            $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
+            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile','token' => $token, 'user' => $user, 'list' => $list], 401);
 
             return response()->json(['token' => $token], 200);
 
