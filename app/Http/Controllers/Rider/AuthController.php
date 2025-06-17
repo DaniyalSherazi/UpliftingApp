@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Password;
 
 class AuthController extends Controller
 {
@@ -406,9 +407,13 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(),[
                 'email' => 'required|email',
+                'type' => 'required|in:forget-password,email-verify',
             ],[
                 'email.required' => 'Email is required',
                 'email.email' => 'Invalid email format',
+
+                'type.required' => 'Type is required',
+                'type.in' => 'Invalid type',
             ]);
 
             if($validator->fails())throw new Exception($validator->errors()->first(),400);
@@ -416,9 +421,20 @@ class AuthController extends Controller
             $rider = User::where('email', $request->email)->first();
             if (!$rider) throw new Exception('User not found', 404);
             $token = rand(1000, 9999);
-            $rider->update([
-                'remember_token' => $token
-            ]);
+            if($request->type == 'forget-password'){
+                PasswordResetToken::where('email', $request->email)->delete();
+                PasswordResetToken::insert([
+                    'email' => $request->email,
+                    'token' => $token,
+                    'created_at' => now()
+                ]);
+                
+            }else if($request->type == 'email-verify'){
+                if($rider->email_verified_at != null)throw new Exception('Email already verified');
+                $rider->update([
+                    'remember_token' => $token
+                ]);
+            }
             Mail::to($request->email)->send(new VerifyAccountMail([
                 'message' => 'Hi '.$rider->first_name. $rider->last_name.', This is your one time password',
                 'otp' => $token,

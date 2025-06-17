@@ -336,20 +336,34 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(),[
                 'email' => 'required|email',
+                'type' => 'required|in:forget-password,email-verify',
             ],[
                 'email.required' => 'Email is required',
                 'email.email' => 'Invalid email format',
+
+                'type.required' => 'Type is required',
+                'type.in' => 'Invalid type',
             ]);
 
             if($validator->fails())throw new Exception($validator->errors()->first(),400);
 
             $customer = User::where('email', $request->email)->first();
             if (!$customer) throw new Exception('User not found', 404);
-            if($customer->email_verified_at != null)throw new Exception('Email already verified');
             $token = rand(1000, 9999);
-            $customer->update([
-                'remember_token' => $token
-            ]);
+            if($request->type == 'forget-password'){
+                PasswordResetToken::where('email', $request->email)->delete();
+                PasswordResetToken::insert([
+                    'email' => $request->email,
+                    'token' => $token,
+                    'created_at' => now()
+                ]);
+                
+            }else if($request->type == 'email-verify'){
+                if($customer->email_verified_at != null)throw new Exception('Email already verified');
+                $customer->update([
+                    'remember_token' => $token
+                ]);
+            }
             Mail::to($request->email)->send(new VerifyAccountMail([
                 'message' => 'Hi '.$customer->first_name. $customer->last_name.', This is your one time password',
                 'otp' => $token,
