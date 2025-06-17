@@ -309,17 +309,15 @@ class AuthController extends Controller
                 [
                     'token' => 'required|string',
 
-                    'password' => 'required|string|min:8',
-                    'confirm_password' => 'required|string|min:8|same:password',
+                    'password' => 'nullable|string|min:8',
+                    'confirm_password' => 'nullable|string|min:8|same:password',
                 ],
                 [
                     'token.required' => 'Token required',
 
-                    'password.required' => 'Password required',
                     'password.string' => 'Password must be a string',
                     'password.min' => 'Password must be at least 8 characters',
 
-                    'confirm_password.required' => 'Confirm Password required',
                     'confirm_password.string' => 'Confirm Password must be a string',
                     'confirm_password.min' => 'Confirm Password must be at least 8 characters',
                     'confirm_password.same' => 'Confirm Password must be same as Password',
@@ -330,6 +328,15 @@ class AuthController extends Controller
             
             $data  = PasswordResetToken::where('token', $request->token)->first();
             if(empty($data)) throw new Exception('Invalid token', 400);
+
+            // Phase 1: OTP Verified successfully
+            if (empty($request->password) && empty($request->confirm_password)) {
+                // If no password is provided, just return a success message for OTP verification
+                return response()->json([
+                    'message' => 'OTP verified successfully',
+                ], 200);
+            }
+            
             $user = User::where('email', $data->email)->first();
             $user->update([
                 'password' => Hash::make($request->password),
