@@ -319,7 +319,6 @@
             @include('admin.layout.header')
             {{-- .Header --}}
             
-
             {{-- Content --}}
             @yield('content')
             {{-- /Content --}}
