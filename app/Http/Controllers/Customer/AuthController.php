@@ -357,18 +357,23 @@ class AuthController extends Controller
                     'token' => $token,
                     'created_at' => now()
                 ]);
+                Mail::to($request->email)->send(new OTPMail([
+                    'message' => 'Hi '.$customer->first_name. $customer->last_name.', This is your one time password',
+                    'otp' => $token
+                ]));
                 
             }else if($request->type == 'email-verify'){
                 if($customer->email_verified_at != null)throw new Exception('Email already verified');
                 $customer->update([
                     'remember_token' => $token
                 ]);
+                Mail::to($request->email)->send(new VerifyAccountMail([
+                    'message' => 'Hi '.$customer->first_name. $customer->last_name.', This is your one time password',
+                    'otp' => $token,
+                    'is_url'=>false
+                ]));
             }
-            Mail::to($request->email)->send(new VerifyAccountMail([
-                'message' => 'Hi '.$customer->first_name. $customer->last_name.', This is your one time password',
-                'otp' => $token,
-                'is_url'=>false
-            ]));
+            
             return response()->json(['token' => $token], 200);
         }catch(QueryException $e){
             return response()->json(['DB error' => $e->getMessage()], 500);
