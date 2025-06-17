@@ -300,6 +300,7 @@ class AuthController extends Controller
             if ($validator->fails()) throw new Exception($validator->errors()->first(), 400);
             
             $data  = PasswordResetToken::where('token', $request->token)->first();
+            if(empty($data)) throw new Exception('Invalid token', 400);
             $user = User::where('email', $data->email)->first();
             $user->update([
                 'password' => Hash::make($request->password),

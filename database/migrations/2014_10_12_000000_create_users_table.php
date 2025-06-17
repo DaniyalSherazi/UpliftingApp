@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->bigInteger('phone');
             $table->string('nationality');
-            $table->bigInteger('nat_id');
-            $table->longText('nat_id_photo');
-            $table->longText('avatar');
+            $table->bigInteger('nat_id')->nullable();
+            $table->longText('nat_id_photo')->nullable();
+            $table->longText('avatar')->nullable();
             $table->longText('lat_long');
             $table->longText('device_id');
             $table->enum('role', ['customer', 'rider'])->default('customer');
