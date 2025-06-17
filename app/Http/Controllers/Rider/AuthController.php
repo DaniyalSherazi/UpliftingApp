@@ -7,6 +7,7 @@ use App\Mail\OTPMail;
 use App\Mail\VerifyAccountMail;
 use App\Models\PasswordResetToken;
 use App\Models\Rider;
+use App\Models\Vehicle;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -154,13 +155,41 @@ class AuthController extends Controller
             if($validator->fails())throw new Exception($validator->errors()->first(),400);
 
             $user = User::where('email', $request->email)->first();
-
-            if (!$user) throw new Exception('User not found', 404);
+            if (!$user) throw new Exception('Account not found', 404);
             if (!$user->email_verified_at) throw new Exception('Email not verified', 404);
 
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials'], 401);
             }
+
+            $rider_info = Rider::where('user_id', $user->id)->first();
+            $vehicle = Vehicle::where('user_id', $user->id)->first();
+
+            if(empty($rider_info) || empty($vehicle)) return response()->json(['message' => 'Please complete your profile'], 401);
+
+            // required list
+            $pp = true;
+            $dr_fnb = true;
+            $vehicle_insurance = true;
+            $rc = true;
+            $background_verification = true;
+            if(empty($user->avatar)) $pp = false;
+            if(empty($rider_info->license_photo)) $dr_fnb = false;
+            if(empty($vehicle->vehicle_insurance)) $vehicle_insurance = false;
+            if(empty($vehicle->registration_certificate)) $rc = false;
+            if(empty($rider_info->background_verification)) $background_verification = false;
+            $list = [
+                'profile Photo' => $pp,
+                'Driving License' => $dr_fnb,
+                'Vehicle Insurance' => $vehicle_insurance,
+                'Registration Certificate' => $rc,
+                'Background Verification' => $background_verification
+            ];
+            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile', 'list' => $list], 401);
+
+            
+
+            
             $user->tokens()->delete();
             $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
 
@@ -438,6 +467,181 @@ class AuthController extends Controller
         try{
             Auth::user()->tokens()->delete();
             return response()->json(['message' => 'Logout successfully'], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    // verifications apis
+
+    public function profilePicture(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $validator = Validator::make(request()->all(),[
+                'avatar' => 'required',
+            ],[
+                'avatar.required' => 'Avatar is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            // setp to move
+
+            $avatar = null;
+            // move photos to storage
+            if ($request->hasFile('avatar')) {
+                $image = $request->file('avatar');
+                $image_name = 'r-avatar' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('rider-avatar'), $image_name);
+                $avatar = 'rider-avatar/' . $image_name;
+            }
+
+            $user->update([
+                'avatar' => $avatar
+            ]);
+            return response()->json(['user' => $user], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function drivingLicense(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $validator = Validator::make(request()->all(),[
+                'front_side' => 'required',
+                'back_side' => 'required',
+            ],[
+                'front_side.required' => 'Front side is required',
+                'back_side.required' => 'Back side is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            // setp to move
+
+            $front_side = null;
+            $back_side = null;
+            // move photos to storage
+            if ($request->hasFile('front_side')) {
+                $image = $request->file('front_side');
+                $image_name = 'front-r-license' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('rider-license'), $image_name);
+                $front_side = 'rider-license/' . $image_name;
+            }
+
+            if ($request->hasFile('back_side')) {
+                $image = $request->file('back_side');
+                $image_name = 'back-r-license' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('rider-license'), $image_name);
+                $back_side = 'rider-license/' . $image_name;
+            }
+            $rider = Rider::find($user->id);
+            $rider->update([
+                'license_photo' => [$front_side, $back_side]
+            ]);
+            return response()->json(['user' => $user], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function vehicleInsurance(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $validator = Validator::make(request()->all(),[
+                'vehicle_insurance' => 'required',
+            ],[
+                'vehicle_insurance.required' => 'Vehicle insurance is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            // setp to move
+
+            $vehicle_insurance = null;
+            // move photos to storage
+            if ($request->hasFile('vehicle_insurance')) {
+                $image = $request->file('vehicle_insurance');
+                $image_name = 'vehicle-insurance-'. $user->id . '-' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('vehicle-insurance'), $image_name);
+                $vehicle_insurance = 'vehicle-insurance/' . $image_name;
+            }
+            $vehicle = Vehicle::find($user->id);
+            $vehicle->update([
+                'vehicle_insurance' => $vehicle_insurance
+            ]);
+            return response()->json(['user' => $user], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function registrationCertificate(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $validator = Validator::make(request()->all(),[
+                'registration_certificate' => 'required',
+            ],[
+                'registration_certificate.required' => 'Registration certificate is required',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            // setp to move
+
+            $registration_certificate = null;
+            // move photos to storage
+            if ($request->hasFile('registration_certificate')) {
+                $image = $request->file('registration_certificate');
+                $image_name = 'registration-certificate-'. $user->id . '-' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('registration-certificate'), $image_name);
+                $registration_certificate = 'registration-certificate/' . $image_name;
+            }
+            $vehicle = Vehicle::find($user->id);
+            $vehicle->update([
+                'registration_certificate' => $registration_certificate
+            ]);
+            return response()->json(['user' => $user], 200);
+        }catch(QueryException $e){
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function backgroundCheck(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $validator = Validator::make(request()->all(),[
+                'background_check' => 'required|in:true,false',
+            ],[
+                'background_check.required' => 'background check is required',
+                'background_check.in' => 'background check should be true or false',
+            ]);
+
+            if($validator->fails())throw new Exception($validator->errors()->first(),400);
+
+            $rider = Rider::find($user->id);
+            $rider->update([
+                'background_check' => $request->background_check
+            ])
+            ;
+            return response()->json(['user' => $user], 200);
         }catch(QueryException $e){
             return response()->json(['DB error' => $e->getMessage()], 500);
         }catch(Exception $e){

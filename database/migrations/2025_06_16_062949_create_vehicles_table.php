@@ -16,12 +16,13 @@ return new class extends Migration
             $table->unsignedBigInteger('vehicle_of');
             $table->foreign('vehicle_of')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('number_plate');
-            $table->string('Registration_doc_url');
-            $table->date('insurance_validity');
+            $table->longText('registration_certificate')->nullable();
+            $table->date('insurance_validity')->nullable();
             $table->string('make');
             $table->string('model');
             $table->string('year');
             $table->string('color');
+            $table->longText('vehicle_insurance')->nullable();
             $table->longText('photos')->nullable();
             $table->unsignedBigInteger('vehicle_type_rate_id');
             $table->foreign('vehicle_type_rate_id')->references('id')->on('vehicle_type_rates')->onUpdate('cascade')->onDelete('cascade');

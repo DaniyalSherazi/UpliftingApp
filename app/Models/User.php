@@ -34,7 +34,7 @@ class User extends Authenticatable
         'is_approved',
         'remember_token',
         'role',
-        
+        'fcm_id',
     ];
 
     /**

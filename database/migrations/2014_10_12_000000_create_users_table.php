@@ -31,6 +31,7 @@ return new class extends Migration
             $table->enum('is_approved', ['approved','suspended','pending'])->default('pending');
             $table->longText('google_id')->nullable();
             $table->longText('apple_id')->nullable();
+            $table->longText('fcm_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
