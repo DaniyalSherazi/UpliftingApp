@@ -171,7 +171,7 @@ class AuthController extends Controller
             $token = $user->createToken('rider-token', ['rider'])->plainTextToken;
 
 
-            if(empty($rider_info) && empty($vehicle)) return response()->json(['message' => 'Lets complete your profile', 'token' => $token, 'user' => $user,], 200);
+            if(empty($rider_info) && empty($vehicle)) return response()->json(['add-vehicle'=>1, 'message' => 'Lets complete your profile', 'token' => $token, 'user' => $user], 200);
 
             // required list
             $pp = true;
@@ -191,7 +191,7 @@ class AuthController extends Controller
                 'Registration Certificate' => $rc,
                 'Background Verification' => $background_verification
             ];
-            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile','token' => $token, 'user' => $user, 'list' => $list], 200);
+            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['add-vehicle'=>0, 'message' => 'Please complete your profile','token' => $token, 'user' => $user, 'list' => $list], 200);
 
             return response()->json(['token' => $token], 200);
 
