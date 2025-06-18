@@ -30,7 +30,7 @@ class VehicleController extends Controller
         try{
             $user = Auth::user();
             $validator = Validator::make(request()->all(),[
-                'vehcile_type' => 'required|exists:vehicle_type_rates,id',
+                'vehcile_type_id' => 'required|exists:vehicle_type_rates,id',
                 'registration_number' => 'required',
                 'model' => 'required',
                 'make' => 'required',
@@ -40,8 +40,8 @@ class VehicleController extends Controller
                 'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'number_plate' => 'required',
             ],[
-                'vehcile_type.required' => 'Vehicle type is required',
-                'vehcile_type.exists' => 'Vehicle type does not exist',
+                'vehcile_type_id.required' => 'Vehicle type is required',
+                'vehcile_type_id.exists' => 'Vehicle type does not exist',
                 'registration_number.required' => 'Registration number is required',
                 'model.required' => 'Model is required',
                 'make.required' => 'Make is required',
