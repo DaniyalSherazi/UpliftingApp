@@ -12,8 +12,8 @@ class Vehicle extends Model
 
     protected $fillable = [
         'vehicle_of',
-        'number_plate',
         'registration_certificate',
+        'registration_number',
         'insurance_validity',
         'vehicle_insurance',
         'make',

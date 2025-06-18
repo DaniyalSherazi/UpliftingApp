@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('vehicle_of');
             $table->foreign('vehicle_of')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('number_plate');
+            $table->string('registration_number');
             $table->longText('registration_certificate')->nullable();
             $table->date('insurance_validity')->nullable();
             $table->string('make');

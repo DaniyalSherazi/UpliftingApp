@@ -38,7 +38,6 @@ class VehicleController extends Controller
                 'year' => 'required',
                 'photos' => 'required|array',
                 'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'number_plate' => 'required',
             ],[
                 'vehicle_type_id.required' => 'Vehicle type is required',
                 'vehicle_type_id.exists' => 'Vehicle type does not exist',
@@ -52,7 +51,6 @@ class VehicleController extends Controller
                 'photos.*.image' => 'Photos must be an image',
                 'photos.*.mimes' => 'Photos must be a file of type: jpeg, png, jpg, gif, svg',
                 'photos.*.max' => 'Photos may not be greater than 2mb',
-                'number_plate.required' => 'Number plate is required',
             ]);
 
             if ($validator->fails()) throw new Exception($validator->errors()->first(), 400);
@@ -73,7 +71,6 @@ class VehicleController extends Controller
                 'make' => $request->make,
                 'color' => $request->color,
                 'year' => $request->year,
-                'number_plate' => $request->number_plate,
                 'photos' => $photos,
             ]);
 
