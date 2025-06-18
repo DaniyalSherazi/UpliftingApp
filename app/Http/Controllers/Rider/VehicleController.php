@@ -66,7 +66,7 @@ class VehicleController extends Controller
                 $photos[] = 'rider-vehicle/' . $image_name;
             }
             $vehicle = Vehicle::create([
-                'user_id' => $user->id,
+                'vehicle_of' => $user->id,
                 'vehcile_type' => $request->vehcile_type,
                 'registration_number' => $request->registration_number,
                 'model' => $request->model,
