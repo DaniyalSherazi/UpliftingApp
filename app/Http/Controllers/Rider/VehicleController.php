@@ -21,7 +21,7 @@ class VehicleController extends Controller
     {
         try {
             $query = Vehicle::select('vehicles.*','vehicle_type_rates.title as vehicle_type')
-                ->join('vehicle_type_rates', 'vehicles.vehicle_type_id', '=', 'vehicle_type_rates.id')
+                ->join('vehicle_type_rates', 'vehicles.vehicle_type_rate_id', '=', 'vehicle_type_rates.id')
                 ->join('users', 'vehicles.vehicle_of', '=', 'users.id')
                 ->orderBy('id', 'desc');
 
