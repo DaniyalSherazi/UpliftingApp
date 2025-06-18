@@ -78,6 +78,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/background-check', [RiderAuth::class, 'backgroundCheck']);
 
         // vehicle apis
+        Route::get('vehicle-type', [VehicleTypeRateController::class, 'list1']);
         Route::apiResource('/vehicle', RiderVehicleController::class)->only('index', 'store', 'update', 'destroy');
     });
     
@@ -90,8 +91,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/change-password', [CustomerAuth::class, 'changePassword']);
         Route::post('/broadcasting/auth', [CustomerAuth::class, 'broadcast']);
         Route::get('/logout', [CustomerAuth::class, 'logout']);
+        Route::get('vehicle-type', [VehicleTypeRateController::class, 'list2']);
     });
     
     // global 
-    Route::get('vehicle-type', [VehicleTypeRateController::class, 'list']);
+    
 });

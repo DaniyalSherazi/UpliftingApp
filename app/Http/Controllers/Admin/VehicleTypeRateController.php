@@ -179,7 +179,12 @@ class VehicleTypeRateController extends Controller
     
     }
 
-    public function list(): JsonResponse
+    public function list1(): JsonResponse
+    {
+        $data = VehicleTypeRate::select('id','title')->get();
+        return response()->json($data,200);
+    }
+    public function list2(): JsonResponse
     {
         $data = VehicleTypeRate::all();
         return response()->json($data,200);
