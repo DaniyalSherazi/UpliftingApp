@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PromoCodeController;
 use App\Http\Controllers\Admin\VehicleTypeRateController;
+use App\Http\Controllers\Rider\VehicleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
 use App\Http\Controllers\Admin\RiderController;
@@ -44,6 +45,8 @@ Route::prefix('admin')->group(function () {
             Route::resource('/promo-codes', PromoCodeController::class);
             Route::get('/promocode/approved/{id}/{status}', [PromoCodeController::class, 'approvedStatus'])->name('promocode.approved');
             Route::post('/promocode/update-status', [PromoCodeController::class, 'updateStatus'])->name('promocode.updateStatus');
+            
+            Route::resource('/vehicles', VehicleController::class);
         });
     });
 

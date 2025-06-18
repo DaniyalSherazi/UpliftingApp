@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
@@ -16,10 +17,35 @@ class VehicleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $query = Vehicle::select('vehicles.*','vehicle_type_rates.title as vehicle_type')
+                ->join('vehicle_type_rates', 'vehicles.vehicle_type_id', '=', 'vehicle_type_rates.id')
+                ->join('users', 'vehicles.vehicle_of', '=', 'users.id')
+                ->orderBy('id', 'desc');
+
+            $perPage = $request->query('per_page', 25);
+            $searchQuery = $request->query('search');
+
+            if (!empty($searchQuery)) {
+                // Apply the search query directly on the main query
+                $query->where('vehicles.title', 'like', '%' . $searchQuery . '%');
+            }
+
+            // Execute the query with pagination
+            $data = $query->paginate($perPage);
+
+            return view('admin.vehicles.index', compact('data'));
+
+        } catch (Exception $e) {
+            Session::flash('error', [
+                'text' => $e->getMessage(),
+            ]);
+            return redirect()->back();
+        }
     }
+
 
 
     /**
