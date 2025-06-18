@@ -191,7 +191,7 @@ class AuthController extends Controller
                 'Registration Certificate' => $rc,
                 'Background Verification' => $background_verification
             ];
-            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile','token' => $token, 'user' => $user, 'list' => $list], 401);
+            if(!$pp || !$dr_fnb || !$vehicle_insurance || !$rc || !$background_verification) return response()->json(['message' => 'Please complete your profile','token' => $token, 'user' => $user, 'list' => $list], 200);
 
             return response()->json(['token' => $token], 200);
 
