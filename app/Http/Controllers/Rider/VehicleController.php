@@ -30,7 +30,7 @@ class VehicleController extends Controller
         try{
             $user = Auth::user();
             $validator = Validator::make(request()->all(),[
-                'vehcile_type_id' => 'required|exists:vehicle_type_rates,id',
+                'vehicle_type_id' => 'required|exists:vehicle_type_rates,id',
                 'registration_number' => 'required',
                 'model' => 'required',
                 'make' => 'required',
@@ -40,8 +40,8 @@ class VehicleController extends Controller
                 'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'number_plate' => 'required',
             ],[
-                'vehcile_type_id.required' => 'Vehicle type is required',
-                'vehcile_type_id.exists' => 'Vehicle type does not exist',
+                'vehicle_type_id.required' => 'Vehicle type is required',
+                'vehicle_type_id.exists' => 'Vehicle type does not exist',
                 'registration_number.required' => 'Registration number is required',
                 'model.required' => 'Model is required',
                 'make.required' => 'Make is required',
@@ -61,13 +61,13 @@ class VehicleController extends Controller
             $photos = [];
             foreach($request->photos as $photo){
                 $image = $photo;
-                $image_name = 'r-vehcile-' . $user->id . '-' . time() . '.' . $image->getClientOriginalExtension();
+                $image_name = 'r-vehicle-' . $user->id . '-' . time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('rider-vehicle'), $image_name);
                 $photos[] = 'rider-vehicle/' . $image_name;
             }
             $vehicle = Vehicle::create([
                 'vehicle_of' => $user->id,
-                'vehcile_type' => $request->vehcile_type,
+                'vehicle_type_rate_id' => $request->vehicle_type_id,
                 'registration_number' => $request->registration_number,
                 'model' => $request->model,
                 'make' => $request->make,

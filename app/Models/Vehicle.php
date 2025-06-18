@@ -20,6 +20,6 @@ class Vehicle extends Model
         'model',
         'year',
         'color',
-        'vehicle_type_id',
+        'vehicle_type_rate_id',
     ];
 }
