@@ -100,6 +100,36 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Rider Vehicle</h3>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <tr>
+                                    <th>Vehicle Type</th>
+                                    <th>Photos</th>
+                                    <th>Registration Number</th>
+                                    <th>Model</th>
+                                    <th>Color</th>
+                                    <th>Make</th>
+                                    <th>Year</th>
+
+                                </tr>
+                                @foreach ($vehicles as $vehicle)
+                                    <td>{{ $vehicle->vehicle_type }}</td>
+                                    <td>
+                                        <img class="img-fluid w-50" src="{{ asset($vehicle->photos[0]) }}" alt="">
+                                    </td>
+                                    <td>{{ $vehicle->registration_number }}</td>
+                                    <td>{{ $vehicle->model }}</td>
+                                    <td>{{ $vehicle->color }}</td>
+                                    <td>{{ $vehicle->make }}</td>
+                                    <td>{{ $vehicle->year }}</td>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
                     @if($data->is_approved == 'pending')
                         <div class="d-flex justify-content-end">
                             <a href="{{ route('admin.riders.approved', [$data->user_id, 'approved'] ) }}" class="btn btn-primary mx-3">Approved</a>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Rider;
 use App\Models\User;
+use App\Models\Vehicle;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -67,8 +68,10 @@ class RiderController extends Controller
         try{
             $data = User::select('users.*','riders.status as online_status','riders.*','users.id as user_id')
             ->join('riders', 'users.id', '=', 'riders.user_id')->where('users.id', $id)->first();
+
+            $vehicles = Vehicle::where('vehicle_of', $data->user_id)->get();
             
-            return view('admin.riders.show', compact('data'));
+            return view('admin.riders.show', compact('data','vehicles'));
         }catch(Exception $e){
             Session::flash('error', [
                 'text' => "something went wrong. Please try again",
