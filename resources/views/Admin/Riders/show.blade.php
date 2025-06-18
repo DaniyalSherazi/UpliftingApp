@@ -114,7 +114,6 @@
                                     <th>Color</th>
                                     <th>Make</th>
                                     <th>Year</th>
-
                                 </tr>
                                 @foreach ($vehicles as $vehicle)
                                     <td>{{ $vehicle->vehicle_type }}</td>
