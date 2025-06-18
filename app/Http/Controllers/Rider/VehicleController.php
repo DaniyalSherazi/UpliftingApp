@@ -78,7 +78,7 @@ class VehicleController extends Controller
         }catch(QueryException $e){
             return response()->json(['DB message' => $e->getMessage(),], 500);
         }catch(Exception $e){
-            return response()->json(['message' => $e->getMessage(),], $e->getCode());
+            return response()->json(['message' => $e->getMessage(),], 500);
         }
     }
 
